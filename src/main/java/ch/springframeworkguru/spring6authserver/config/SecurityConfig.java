@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import java.util.UUID;
 
+// See https://docs.spring.io/spring-authorization-server/reference/getting-started.html
 @Configuration
 public class SecurityConfig {
 
@@ -64,7 +65,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
+        UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN PROD
             .username("user")
             .password("password")
             .roles("USER")
