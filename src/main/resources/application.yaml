@@ -1,3 +1,6 @@
 spring:
   application:
     name: spring-6-auth-server
+
+server:
+  port: 9000
