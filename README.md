@@ -1,17 +1,20 @@
 # Spring Framework 6: Beginner to Guru
-# spring-6-auth-server
 
-Chapter 22: Spring Authorization Server
+## spring-6-auth-server
 
-Spring 6 Authentication Server
+Welcome to your new project! This is an educational Spring Boot 3 / Spring Framework 6 web application, designed as part of the "Spring Framework 6 - Beginner to Guru" online course. 
+It's a great way to dive into the Spring Framework and learn by doing. 
 
 See: https://docs.spring.io/spring-authorization-server/reference/getting-started.html
+See: Chapter 22: Spring Authorization Server
 
-This repository is for an example application built in my Spring Framework 6 - Beginner to Guru online course
+## Getting Started:
+Server runs on port 9000.
 
-The application is a simple Spring Boot 3 / Spring Framework 6 web application. It is used to help students learn how to use the Spring Framework. Step by step instructions and detailed explanations can be found within the course.
-
-As you work through the course, please feel free to fork this repository to your out GitHub repo. Most links contain links to source code changes. If you encounter a problem you can compare your code to the lesson code. See this link for help with compares
+## Project Structure:
+`pom.xml`: This is your main Maven configuration file. It manages dependencies, plugins, and build settings.
+`src` Directory: Contains your main Java source code and resources, as well as test code.
+`restRequest` Directory: Houses resources for REST requests, including authentication HTTP requests and HTTP client configurations.
 
 ## Spring Framework 6: Beginner to Guru Course Wiki
 Got a question about your Spring Framework 6 course? [Checkout these FAQs!](https://github.com/springframeworkguru/spring5webapp/wiki)
