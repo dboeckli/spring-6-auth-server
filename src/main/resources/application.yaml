@@ -5,6 +5,10 @@ spring:
 server:
   port: 9000
   
+logging:
+  level:
+    org.zalando.logbook: TRACE  
+  
 management:
   health:
     readinessstate:
