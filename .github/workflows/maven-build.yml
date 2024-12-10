@@ -101,4 +101,6 @@ jobs:
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
-          mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml \
+          -Ddocker.publishRegistry.username=${{ github.actor }} \
+          -Ddocker.publishRegistry.password=${{ secrets.GITHUB_TOKEN }} \
