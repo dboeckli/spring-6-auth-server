@@ -98,7 +98,7 @@ jobs:
 
       - name: Run Maven Build
         env:
-          GITHUB_ACTOR: {{ github.actor }}
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
