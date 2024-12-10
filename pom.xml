@@ -190,6 +190,7 @@
                             </additionalProperties>
                         </configuration>
                     </execution>
+                    
                     <execution>
                         <id>build-docker-image</id>
                         <goals>
