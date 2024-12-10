@@ -198,7 +198,6 @@
                         </goals>
                     </execution>
                     
-                    <!-- see https://medium.com/@thearaseng/using-github-actions-build-and-push-docker-images-30d05e58be4b -->
                     <execution>
                         <id>publish-docker-image-to-github</id>
                         <goals>
