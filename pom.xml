@@ -204,12 +204,15 @@
                         <phase>deploy</phase>
                         <configuration>
                             <image>
+                                <name>ghcr.io/abc/${project.artifactId}:${project.version}</name>
+                                <publish>true</publish>
                                 <publish>true</publish>
                             </image>
                             <docker>
                                 <publishRegistry>
-                                    <username>${env.DOCKER_REGISTRY_USERNAME}</username>
-                                    <password>${env.DOCKER_REGISTRY_TOKEN}</password>
+                                    <!--<username>${env.DOCKER_REGISTRY_USERNAME}</username>
+                                    <password>${env.DOCKER_REGISTRY_TOKEN}</password>-->
+                                    <token>${env.DOCKER_REGISTRY_TOKEN}</token>
                                     <url>https://ghcr.io</url> <!-- gitHub packages -->
                                 </publishRegistry>
                             </docker>
