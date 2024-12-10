@@ -200,7 +200,7 @@
                     
                     <!-- see https://medium.com/@thearaseng/using-github-actions-build-and-push-docker-images-30d05e58be4b -->
                     <execution>
-                        <id>publish-docker-image</id>
+                        <id>publish-docker-image-to-github</id>
                         <goals>
                             <goal>build-image-no-fork</goal>
                         </goals>
@@ -217,13 +217,27 @@
                                     <password>${env.GITHUB_TOKEN}</password>
                                     <url>https://ghcr.io</url><!-- gitHub packages -->
                                 </publishRegistry>
-                                <!--
+                            </docker>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>publish-docker-image-to-docker-hub</id>
+                        <goals>
+                            <goal>build-image-no-fork</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <skip>false</skip>
+                            <image>
+                                <name>${env.DOCKER_USER}/${project.artifactId}:${project.version}</name>
+                                <publish>true</publish>
+                            </image>
+                            <docker>
                                 <publishRegistry>
                                     <username>${env.DOCKER_USER}</username>
-                                    <password>${env.DOCKER_REGISTRY_TOKEN}</password>
-                                    <token>${env.DOCKER_TOKEN}</token>
-                                    <url>https://ghcr.io</url> 
-                                </publishRegistry>-->
+                                    <password>${env.DOCKER_TOKEN}</password>
+                                    <url>https://index.docker.io/v1/</url> 
+                                </publishRegistry>
                             </docker>
                         </configuration>
                     </execution>
