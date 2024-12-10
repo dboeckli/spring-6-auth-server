@@ -234,8 +234,10 @@
                             </image>
                             <docker>
                                 <publishRegistry>
+                                    <!--
                                     <username>${env.DOCKER_USER}</username>
-                                    <password>${env.DOCKER_TOKEN}</password>
+                                    <password>${env.DOCKER_TOKEN}</password>-->
+                                    <token>${env.DOCKER_TOKEN</token>
                                     <url>https://index.docker.io/v1/</url> 
                                 </publishRegistry>
                             </docker>
