@@ -206,18 +206,24 @@
                         </goals>
                         <phase>deploy</phase>
                         <configuration>
-                            <skip>true</skip>
+                            <skip>false</skip>
                             <image>
                                 <name>ghcr.io/abc/${project.artifactId}:${project.version}</name>
                                 <publish>true</publish>
                             </image>
                             <docker>
                                 <publishRegistry>
-                                    <!--<username>${env.DOCKER_REGISTRY_USERNAME}</username>
-                                    <password>${env.DOCKER_REGISTRY_TOKEN}</password>-->
-                                    <token>${env.GITHUB_TOKEN}</token>
-                                    <url>https://ghcr.io</url> <!-- gitHub packages -->
+                                    <username>${env.GITHUB_ACTOR}</username>
+                                    <password>${env.GITHUB_TOKEN}</password>
+                                    <url>https://ghcr.io</url><!-- gitHub packages -->
                                 </publishRegistry>
+                                <!--
+                                <publishRegistry>
+                                    <username>${env.DOCKER_USER}</username>
+                                    <password>${env.DOCKER_REGISTRY_TOKEN}</password>
+                                    <token>${env.DOCKER_TOKEN}</token>
+                                    <url>https://ghcr.io</url> 
+                                </publishRegistry>-->
                             </docker>
                         </configuration>
                     </execution>
