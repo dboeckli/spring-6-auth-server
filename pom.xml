@@ -212,7 +212,7 @@
                                 <publishRegistry>
                                     <!--<username>${env.DOCKER_REGISTRY_USERNAME}</username>
                                     <password>${env.DOCKER_REGISTRY_TOKEN}</password>-->
-                                    <token>${env.DOCKER_REGISTRY_TOKEN}</token>
+                                    <token>${env.GITHUB_TOKEN}</token>
                                     <url>https://ghcr.io</url> <!-- gitHub packages -->
                                 </publishRegistry>
                             </docker>

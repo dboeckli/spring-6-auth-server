@@ -101,4 +101,4 @@ jobs:
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
-          mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml -DDOCKER_REGISTRY_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
