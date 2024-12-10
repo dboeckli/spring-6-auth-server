@@ -185,7 +185,7 @@
                                 <mavenUser>${user.name}</mavenUser>
                                 <javaVersion>${java.version}</javaVersion>
                                 <javaVendor>${java.vendor}</javaVendor>
-                                <!--<commit-id>${buildNumber}</commit-id>-->
+                                <commit-id>${buildNumber}</commit-id>
                                 <!--<docker-repository>${docker.push.repository}/${docker.image.prefix}/${project.artifactId}</docker-repository>-->
                             </additionalProperties>
                         </configuration>
@@ -194,6 +194,26 @@
                         <goals>
                             <goal>build-image-no-fork</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>build-image-no-fork</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <image>
+                                <publish>true</publish>
+                            </image>
+                            <docker>
+                                <publishRegistry>
+                                    <!--
+                                    <username>abc</username>
+                                    <password>mytoken</password>
+                                    -->
+                                    <url>https://ghcr.io</url>
+                                </publishRegistry>
+                            </docker>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
