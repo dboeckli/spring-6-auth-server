@@ -196,6 +196,8 @@
                             <goal>build-image-no-fork</goal>
                         </goals>
                     </execution>
+                    
+                    <!-- see https://medium.com/@thearaseng/using-github-actions-build-and-push-docker-images-30d05e58be4b -->
                     <execution>
                         <id>publish-docker-image</id>
                         <goals>
@@ -203,9 +205,9 @@
                         </goals>
                         <phase>deploy</phase>
                         <configuration>
+                            <skip>true</skip>
                             <image>
                                 <name>ghcr.io/abc/${project.artifactId}:${project.version}</name>
-                                <publish>true</publish>
                                 <publish>true</publish>
                             </image>
                             <docker>
