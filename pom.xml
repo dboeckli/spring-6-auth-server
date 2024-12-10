@@ -208,7 +208,7 @@
                         <configuration>
                             <skip>false</skip>
                             <image>
-                                <name>ghcr.io/abc/${project.artifactId}:${project.version}</name>
+                                <name>ghcr.io/dboeckli/${project.artifactId}:${project.version}</name>
                                 <publish>true</publish>
                             </image>
                             <docker>
