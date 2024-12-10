@@ -208,11 +208,9 @@
                             </image>
                             <docker>
                                 <publishRegistry>
-                                    <!--
-                                    <username>abc</username>
-                                    <password>mytoken</password>
-                                    -->
-                                    <url>https://ghcr.io</url>
+                                    <username>${docker.publishRegistry.username}</username>
+                                    <password>${docker.publishRegistry.password}</password>
+                                    <url>https://ghcr.io</url> <!-- gitHub packages -->
                                 </publishRegistry>
                             </docker>
                         </configuration>
