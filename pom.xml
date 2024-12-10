@@ -213,6 +213,7 @@
                             </image>
                             <docker>
                                 <publishRegistry>
+                                    <!-- GITHUB_ACTOR and GITHUB_TOKEN are set by gitHub Actions -->
                                     <username>${env.GITHUB_ACTOR}</username>
                                     <password>${env.GITHUB_TOKEN}</password>
                                     <url>https://ghcr.io</url><!-- gitHub packages -->
@@ -234,10 +235,9 @@
                             </image>
                             <docker>
                                 <publishRegistry>
-                                    <!--
+                                    <!-- DOCKER_USER and DOCKER_TOKEN are set by gitHub Actions -->
                                     <username>${env.DOCKER_USER}</username>
-                                    <password>${env.DOCKER_TOKEN}</password>-->
-                                    <token>${env.DOCKER_TOKEN}</token>
+                                    <password>${env.DOCKER_TOKEN}</password>
                                     <url>https://index.docker.io/v1/</url> 
                                 </publishRegistry>
                             </docker>
