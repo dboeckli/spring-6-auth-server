@@ -16,10 +16,25 @@ Server runs on port 9000.
 `src` Directory: Contains your main Java source code and resources, as well as test code.
 `restRequest` Directory: Houses resources for REST requests, including authentication HTTP requests and HTTP client configurations.
 
-## Docker Run
+## Docker
+
+### create image
+```shell
+.\mvnw clean package spring-boot:build-image
+```
+or just run
+```shell
+.\mvnw clean install
+```
+
+### run image
+
+Hint: remove the daemon flag -d to see what is happening, else it run in background
+
 ```shell
 docker run --name auth-server -d -p 9000:9000 spring-6-auth-server:0.0.1-SNAPSHOT
 docker stop auth-server
+docker rm auth-server
 docker start auth-server
 ```
 
