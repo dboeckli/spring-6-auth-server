@@ -1,14 +1,25 @@
 spring:
   application:
     name: spring-6-auth-server
-
+  security:
+    oauth2:
+      authorization-server:
+        issuer: http://localhost:9000
+        
+security:
+  oauth2:
+    authorization-server:
+      token:
+        access-token-time-to-live-seconds: 600
+        refresh-token-time-to-live-seconds: 3600  
+        
 server:
   port: 9000
   
 logging:
   level:
     org.zalando.logbook: TRACE  
-  
+    
 management:
   health:
     readinessstate:
