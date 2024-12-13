@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -33,11 +35,21 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
 import java.util.UUID;
 
 // See https://docs.spring.io/spring-authorization-server/reference/getting-started.html
 @Configuration
 public class SecurityConfig {
+
+    @Value("${spring.security.oauth2.authorization-server.issuer:http://localhost:9000}")
+    private String issuerUrl;
+
+    @Value("${security.oauth2.authorization-server.token.access-token-time-to-live-seconds:300}")
+    private Integer accessTokenTimeToLive;
+
+    @Value("${security.oauth2.authorization-server.token.refresh-token-time-to-live-seconds:3600}")
+    private Integer refreshTokenTimeToLive;
 
     @Bean
     @Order(1)
@@ -102,6 +114,10 @@ public class SecurityConfig {
             .scope(OidcScopes.PROFILE)
             .scope("message.read")
             .scope("message.write")
+            .tokenSettings(TokenSettings.builder()
+                .accessTokenTimeToLive(Duration.ofSeconds(accessTokenTimeToLive)) 
+                .refreshTokenTimeToLive(Duration.ofSeconds(refreshTokenTimeToLive)) 
+                .build())
             .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
             .build();
 
@@ -141,6 +157,8 @@ public class SecurityConfig {
     
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+            .issuer(issuerUrl)
+            .build();
     }
 }
