@@ -1,10 +1,11 @@
 package ch.springframeworkguru.spring6authserver.config;
 
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
@@ -15,10 +16,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -36,10 +39,11 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
-import java.util.UUID;
+import java.util.*;
 
 // See https://docs.spring.io/spring-authorization-server/reference/getting-started.html
 @Configuration
+@Slf4j
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.authorization-server.issuer:http://localhost:9000}")
@@ -54,9 +58,15 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+        
+        // Replacement deprecation for: OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+        http.with(authorizationServerConfigurer, Customizer.withDefaults());
+
+        http
+            .getConfigurer(OAuth2AuthorizationServerConfigurer.class)
             .oidc(Customizer.withDefaults());    // Enable OpenID Connect 1.0
+        
         http
             // Redirect to the login page when not authenticated from the
             // authorization endpoint
@@ -69,13 +79,6 @@ public class SecurityConfig {
             .oauth2ResourceServer((resourceServer) -> resourceServer
                 .jwt(Customizer.withDefaults()));
 
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-        throws Exception {
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()  // permit all actuator endpoints
@@ -90,6 +93,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
+        @SuppressWarnings("deprecation")
         UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN PROD
             .username("user")
             .password("password")
@@ -133,8 +137,14 @@ public class SecurityConfig {
             .privateKey(privateKey)
             .keyID(UUID.randomUUID().toString())
             .build();
+
         JWKSet jwkSet = new JWKSet(rsaKey);
-        return new ImmutableJWKSet<>(jwkSet);
+
+        return (jwkSelector, securityContext) -> {
+            List<JWK> jwks = jwkSelector.select(jwkSet);
+            log.info("Selected JWKs: {}", jwks);
+            return jwks;
+        };
     }
 
     private static KeyPair generateRsaKey() {
@@ -152,7 +162,24 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+        Set<String> validIssuers = new HashSet<>(Arrays.asList("http://localhost:9000", "http://auth-server:9000"));
+        validIssuers.add(issuerUrl); 
+
+        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+
+        OAuth2TokenValidator<Jwt> defaultValidators = JwtValidators.createDefault();
+        OAuth2TokenValidator<Jwt> issuerValidator = token -> {
+            if (validIssuers.contains(token.getIssuer().toString())) {
+                return OAuth2TokenValidatorResult.success();
+            } else {
+                return OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_issuer", "Issuer is not valid", null));
+            }
+        };
+
+        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(defaultValidators, issuerValidator);
+        jwtDecoder.setJwtValidator(validator);
+
+        return jwtDecoder;
     }
     
     @Bean
