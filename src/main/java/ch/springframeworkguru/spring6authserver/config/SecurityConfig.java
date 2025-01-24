@@ -70,17 +70,17 @@ public class SecurityConfig {
         http
             // Redirect to the login page when not authenticated from the
             // authorization endpoint
-            .exceptionHandling((exceptions) -> exceptions
+            .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(
                     new LoginUrlAuthenticationEntryPoint("/login"))
 
             )
             // Accept access tokens for User Info and/or Client Registration
-            .oauth2ResourceServer((resourceServer) -> resourceServer
+            .oauth2ResourceServer(resourceServer -> resourceServer
                 .jwt(Customizer.withDefaults()));
 
         http
-            .authorizeHttpRequests((authorize) -> authorize
+            .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()  // permit all actuator endpoints
                 .anyRequest().authenticated()
             )
@@ -153,8 +153,7 @@ public class SecurityConfig {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             keyPair = keyPairGenerator.generateKeyPair();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
         return keyPair;
