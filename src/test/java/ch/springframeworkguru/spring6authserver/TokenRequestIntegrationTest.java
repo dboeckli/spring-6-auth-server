@@ -57,7 +57,29 @@ public class TokenRequestIntegrationTest {
             () -> assertTrue(introspectionContent.contains("\"token_type\":\"Bearer\""), "Token type should be Bearer")
         );
     }
-    
+
+    @Test
+    public void testTokenInvalidIntrospection() throws Exception {
+        String clientId = "messaging-client";
+        String clientSecret = "secret";
+        String authorization = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
+
+        String accessToken = "123";
+        
+        // Now, test the introspection endpoint
+        MvcResult introspectionResult = mockMvc.perform(post("/oauth2/introspect")
+                .header("Authorization", "Basic " + authorization)
+                .param("token", accessToken)
+                .param("token_type_hint", "access_token"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        String introspectionContent = introspectionResult.getResponse().getContentAsString();
+        assertAll(
+            () -> assertTrue(introspectionContent.contains("\"active\":false"), "Token should be active")
+        );
+    }
+   
     private String getAccessTokenResponse() throws Exception {
         String clientId = "messaging-client";
         String clientSecret = "secret";
