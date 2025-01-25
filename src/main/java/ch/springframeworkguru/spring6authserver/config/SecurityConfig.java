@@ -1,8 +1,8 @@
 package ch.springframeworkguru.spring6authserver.config;
 
-import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +16,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.core.*;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtValidators;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -39,7 +37,7 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
-import java.util.*;
+import java.util.UUID;
 
 // See https://docs.spring.io/spring-authorization-server/reference/getting-started.html
 @Configuration
@@ -54,12 +52,15 @@ public class SecurityConfig {
 
     @Value("${security.oauth2.authorization-server.token.refresh-token-time-to-live-seconds:3600}")
     private Integer refreshTokenTimeToLive;
+    
+    public final static String REDIRECT_URL = "http://localhost:8080/login/oauth2/code/messaging-client-oidc";
+    public final static String REDIRECT_URI = "http://localhost:8080/authorized";
+    
 
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         
-        // Replacement deprecation for: OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
         http.with(authorizationServerConfigurer, Customizer.withDefaults());
 
@@ -112,8 +113,8 @@ public class SecurityConfig {
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-            .redirectUri("http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc")
-            .redirectUri("http://127.0.0.1:8080/authorized")
+            .redirectUri(REDIRECT_URL)
+            .redirectUri(REDIRECT_URI)
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)
             .scope("message.read")
@@ -137,15 +138,10 @@ public class SecurityConfig {
             .privateKey(privateKey)
             .keyID(UUID.randomUUID().toString())
             .build();
-
         JWKSet jwkSet = new JWKSet(rsaKey);
-
-        return (jwkSelector, securityContext) -> {
-            List<JWK> jwks = jwkSelector.select(jwkSet);
-            log.info("Selected JWKs: {}", jwks);
-            return jwks;
-        };
+        return new ImmutableJWKSet<>(jwkSet);
     }
+
 
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
@@ -161,24 +157,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-        Set<String> validIssuers = new HashSet<>(Arrays.asList("http://localhost:9000", "http://auth-server:9000"));
-        validIssuers.add(issuerUrl); 
-
-        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
-
-        OAuth2TokenValidator<Jwt> defaultValidators = JwtValidators.createDefault();
-        OAuth2TokenValidator<Jwt> issuerValidator = token -> {
-            if (validIssuers.contains(token.getIssuer().toString())) {
-                return OAuth2TokenValidatorResult.success();
-            } else {
-                return OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_issuer", "Issuer is not valid", null));
-            }
-        };
-
-        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(defaultValidators, issuerValidator);
-        jwtDecoder.setJwtValidator(validator);
-
-        return jwtDecoder;
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
     
     @Bean
