@@ -106,8 +106,7 @@ public class SecurityConfig {
         @SuppressWarnings("deprecation")
         UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN PROD
             .username("user")
-            // @SuppressWarnings("java:S6437")
-            .password("password")
+            .password("password") //NOSONAR
             .roles("USER")
             .build();
 
