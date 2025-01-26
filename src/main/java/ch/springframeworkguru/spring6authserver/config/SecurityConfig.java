@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,6 +44,8 @@ import java.util.UUID;
 
 // See https://docs.spring.io/spring-authorization-server/reference/getting-started.html
 @Configuration
+@Slf4j
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.authorization-server.issuer:http://localhost:9000}")
@@ -51,35 +57,42 @@ public class SecurityConfig {
     @Value("${security.oauth2.authorization-server.token.refresh-token-time-to-live-seconds:3600}")
     private Integer refreshTokenTimeToLive;
 
+    public static final String LOGIN_URL = "http://localhost/login";
+    public static final String REDIRECT_URL = "http://localhost/login/oauth2/code/messaging-client-oidc";
+    public static final String REDIRECT_URI = "http://localhost/authorized";
+    
+
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+        
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+        http.with(authorizationServerConfigurer, Customizer.withDefaults());
+
+        http
+            .getConfigurer(OAuth2AuthorizationServerConfigurer.class)
             .oidc(Customizer.withDefaults());    // Enable OpenID Connect 1.0
+        
         http
             // Redirect to the login page when not authenticated from the
             // authorization endpoint
-            .exceptionHandling((exceptions) -> exceptions
+            .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(
-                    new LoginUrlAuthenticationEntryPoint("/login"))
+                    new LoginUrlAuthenticationEntryPoint(LOGIN_URL))
 
             )
             // Accept access tokens for User Info and/or Client Registration
-            .oauth2ResourceServer((resourceServer) -> resourceServer
+            .oauth2ResourceServer(resourceServer -> resourceServer
                 .jwt(Customizer.withDefaults()));
 
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-        throws Exception {
         http
-            .authorizeHttpRequests((authorize) -> authorize
+            .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()  // permit all actuator endpoints
                 .anyRequest().authenticated()
+            )
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
             )
             // Form login handles the redirect to the login page from the
             // authorization server filter chain
@@ -90,9 +103,10 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
+        @SuppressWarnings("deprecation")
         UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN PROD
             .username("user")
-            .password("password")
+            .password("password") //NOSONAR
             .roles("USER")
             .build();
 
@@ -108,8 +122,8 @@ public class SecurityConfig {
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-            .redirectUri("http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc")
-            .redirectUri("http://127.0.0.1:8080/authorized")
+            .redirectUri(REDIRECT_URL)
+            .redirectUri(REDIRECT_URI)
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)
             .scope("message.read")
@@ -137,14 +151,14 @@ public class SecurityConfig {
         return new ImmutableJWKSet<>(jwkSet);
     }
 
+
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             keyPair = keyPairGenerator.generateKeyPair();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
         return keyPair;
