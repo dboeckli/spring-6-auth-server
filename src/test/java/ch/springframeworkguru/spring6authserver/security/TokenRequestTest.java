@@ -24,14 +24,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
-class TokenRequestIntegrationTest {
+// TODO: SEE: https://towardsdev.com/end-to-end-test-cases-for-spring-authorization-server-using-webclient-e3ed0397e036
+// AND https://github.com/TheSpaceCuber/spring-authorization-server-sample/blob/main/src/test/java/com/example/authorizationserver/AuthorizationServerDemoApplicationTests.java
+class TokenRequestTest {
 
     private static final String CLIENT_ID = "messaging-client";
     private static final String CLIENT_SECRET = "secret";
     private static final String AUTHORIZATION = Base64.getEncoder().encodeToString((CLIENT_ID + ":" + CLIENT_SECRET).getBytes());
     
     private static final String GRANT_TYPE = "client_credentials";
-    
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -51,7 +53,8 @@ class TokenRequestIntegrationTest {
 
     @Test
     void testClientCredentialsAuthorize() throws Exception {
-        String authorizeUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/oauth2/authorize")
+        
+        String authorizeUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:9000/oauth2/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", CLIENT_ID)
             .queryParam("redirect_uri", REDIRECT_URL)

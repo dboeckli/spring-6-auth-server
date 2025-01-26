@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,6 +45,7 @@ import java.util.UUID;
 // See https://docs.spring.io/spring-authorization-server/reference/getting-started.html
 @Configuration
 @Slf4j
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.authorization-server.issuer:http://localhost:9000}")
@@ -53,8 +57,9 @@ public class SecurityConfig {
     @Value("${security.oauth2.authorization-server.token.refresh-token-time-to-live-seconds:3600}")
     private Integer refreshTokenTimeToLive;
     
-    public final static String REDIRECT_URL = "http://localhost:8080/login/oauth2/code/messaging-client-oidc";
-    public final static String REDIRECT_URI = "http://localhost:8080/authorized";
+    public final static String LOGIN_URL = "http://localhost/login";
+    public final static String REDIRECT_URL = "http://localhost/login/oauth2/code/messaging-client-oidc";
+    public final static String REDIRECT_URI = "http://localhost/authorized";
     
 
     @Bean
@@ -73,7 +78,7 @@ public class SecurityConfig {
             // authorization endpoint
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(
-                    new LoginUrlAuthenticationEntryPoint("/login"))
+                    new LoginUrlAuthenticationEntryPoint(LOGIN_URL))
 
             )
             // Accept access tokens for User Info and/or Client Registration
@@ -84,6 +89,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()  // permit all actuator endpoints
                 .anyRequest().authenticated()
+            )
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
             )
             // Form login handles the redirect to the login page from the
             // authorization server filter chain
