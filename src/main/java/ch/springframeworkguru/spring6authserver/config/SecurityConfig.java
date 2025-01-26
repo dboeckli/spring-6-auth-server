@@ -56,10 +56,10 @@ public class SecurityConfig {
 
     @Value("${security.oauth2.authorization-server.token.refresh-token-time-to-live-seconds:3600}")
     private Integer refreshTokenTimeToLive;
-    
-    public final static String LOGIN_URL = "http://localhost/login";
-    public final static String REDIRECT_URL = "http://localhost/login/oauth2/code/messaging-client-oidc";
-    public final static String REDIRECT_URI = "http://localhost/authorized";
+
+    public static final String LOGIN_URL = "http://localhost/login";
+    public static final String REDIRECT_URL = "http://localhost/login/oauth2/code/messaging-client-oidc";
+    public static final String REDIRECT_URI = "http://localhost/authorized";
     
 
     @Bean
@@ -106,6 +106,7 @@ public class SecurityConfig {
         @SuppressWarnings("deprecation")
         UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN PROD
             .username("user")
+            // @SuppressWarnings("java:S6437")
             .password("password")
             .roles("USER")
             .build();
