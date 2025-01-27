@@ -11,6 +11,10 @@ See: Chapter 22: Spring Authorization Server
 ## Getting Started:
 Server runs on port 9000.
 
+## Swagger/Open Api 
+
+http://localhost:9000/swagger-ui/index.html
+
 ## Project Structure:
 `pom.xml`: This is your main Maven configuration file. It manages dependencies, plugins, and build settings.
 `src` Directory: Contains your main Java source code and resources, as well as test code.
