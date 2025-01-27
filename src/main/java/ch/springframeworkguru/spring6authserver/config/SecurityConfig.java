@@ -88,6 +88,10 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()  // permit all actuator endpoints
+                .requestMatchers("/v3/api-docs**",
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
             )
             .csrf(AbstractHttpConfigurer::disable)

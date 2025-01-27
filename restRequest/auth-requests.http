@@ -11,3 +11,10 @@ Authorization: Basic messaging-client secret
 Content-Type: application/x-www-form-urlencoded
 
 token={{$auth.token("auth-id")}}&token_type_hint=access_token
+
+###
+GET http://localhost:9000/.well-known/openid-configuration
+Authorization: Basic messaging-client secret
+Content-Type: application/x-www-form-urlencoded
+
+
