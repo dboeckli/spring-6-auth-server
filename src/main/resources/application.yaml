@@ -51,5 +51,7 @@ logbook:
   predicate:
     exclude:
       - path: /actuator/health      
-
+        
+springdoc:
+  show-actuator: true
 
