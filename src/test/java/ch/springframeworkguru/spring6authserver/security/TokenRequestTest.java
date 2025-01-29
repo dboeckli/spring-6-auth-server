@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
-// TODO: SEE: https://towardsdev.com/end-to-end-test-cases-for-spring-authorization-server-using-webclient-e3ed0397e036
+// SEE: https://towardsdev.com/end-to-end-test-cases-for-spring-authorization-server-using-webclient-e3ed0397e036
 // AND https://github.com/TheSpaceCuber/spring-authorization-server-sample/blob/main/src/test/java/com/example/authorizationserver/AuthorizationServerDemoApplicationTests.java
 class TokenRequestTest {
 
@@ -54,7 +54,7 @@ class TokenRequestTest {
     @Test
     void testClientCredentialsAuthorize() throws Exception {
         
-        String authorizeUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:9000/oauth2/authorize")
+        String authorizeUrl = UriComponentsBuilder.fromUriString("http://localhost:9000/oauth2/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", CLIENT_ID)
             .queryParam("redirect_uri", REDIRECT_URL)
