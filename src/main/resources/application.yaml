@@ -12,6 +12,8 @@ security:
       token:
         access-token-time-to-live-seconds: 600
         refresh-token-time-to-live-seconds: 3600  
+      cors:
+        allowed-origins: http://localhost:8080,http://localhost:8081,http://localhost:8082,http://localhost:8083,http://localhost:8084,http://localhost:9000  
         
 server:
   port: 9000
