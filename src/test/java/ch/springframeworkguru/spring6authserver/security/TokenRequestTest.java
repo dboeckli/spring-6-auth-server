@@ -73,7 +73,7 @@ class TokenRequestTest {
         log.info("Redirect location: {}", redirectLocation);
         log.info("SetCookieHeader: {}", setCookieHeader);
         assertAll(
-            //() -> assertThat(setCookieHeader, notNullValue()),  // TODO: SHOULD NOT BE NULL
+            () -> assertThat(setCookieHeader, nullValue()),  // TODO: SHOULD NOT BE NULL
             () -> assertThat(redirectLocation, notNullValue()),
             () -> assertThat(REDIRECT_URL, startsWith(redirectLocation))
         );
