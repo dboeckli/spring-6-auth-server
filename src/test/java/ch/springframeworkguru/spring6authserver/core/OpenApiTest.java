@@ -1,20 +1,20 @@
 package ch.springframeworkguru.spring6authserver.core;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import org.springframework.test.web.reactive.server.WebTestClient;
-
-import java.util.Objects;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DirtiesContext
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,27 +23,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OpenApiTest {
 
     @Autowired
-    private WebTestClient webTestClient;
+    private MockMvc mockMvc;
 
     @Autowired
     ObjectMapper objectMapper;
 
-    @Test
-    void openapiGetJsonTest() throws JsonProcessingException {
-        EntityExchangeResult<byte[]> result = webTestClient.get().uri("/v3/api-docs")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody()
-            .returnResult();
+    @Autowired
+    BuildProperties buildProperties;
 
-        String jsonResponse = new String(Objects.requireNonNull(result.getResponseBody()));
+    @Test
+    void openapiGetJsonTest() throws Exception {
+        MvcResult result = mockMvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        String jsonResponse = result.getResponse().getContentAsString();
         JsonNode jsonNode = objectMapper.readTree(jsonResponse);
         log.info("Response:\n{}", objectMapper.writeValueAsString(jsonNode));
 
         assertThat(jsonNode.has("info")).isTrue();
         JsonNode infoNode = jsonNode.get("info");
         assertThat(infoNode.has("title")).isTrue();
-        assertThat(infoNode.get("title").asText()).isEqualTo("spring-6-auth-server");
+        assertThat(infoNode.get("title").asText()).isEqualTo(buildProperties.getName());
     }
 
 }
