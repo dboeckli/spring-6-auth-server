@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,12 +35,16 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 // See https://docs.spring.io/spring-authorization-server/reference/getting-started.html
@@ -57,17 +62,23 @@ public class SecurityConfig {
     @Value("${security.oauth2.authorization-server.token.refresh-token-time-to-live-seconds:3600}")
     private Integer refreshTokenTimeToLive;
 
+    @Value("${security.oauth2.authorization-server.cors.allowed-origins}")
+    private List<String> allowedOrigins;
+
     public static final String LOGIN_URL = "http://localhost/login";
     public static final String REDIRECT_URL = "http://localhost/login/oauth2/code/messaging-client-oidc";
     public static final String REDIRECT_URI = "http://localhost/authorized";
     
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
         http.with(authorizationServerConfigurer, Customizer.withDefaults());
+
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource));
 
         http
             .getConfigurer(OAuth2AuthorizationServerConfigurer.class)
@@ -77,9 +88,7 @@ public class SecurityConfig {
             // Redirect to the login page when not authenticated from the
             // authorization endpoint
             .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint(
-                    new LoginUrlAuthenticationEntryPoint(LOGIN_URL))
-
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(LOGIN_URL))
             )
             // Accept access tokens for User Info and/or Client Registration
             .oauth2ResourceServer(resourceServer -> resourceServer
@@ -88,10 +97,12 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()  // permit all actuator endpoints
-                .requestMatchers("/v3/api-docs**",
+                .requestMatchers(
+                    "/v3/api-docs**",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
-                    "/swagger-ui.html").permitAll()
+                    "/swagger-ui.html",
+                    "/.well-known/**").permitAll()
                 .anyRequest().authenticated()
             )
             .csrf(AbstractHttpConfigurer::disable)
@@ -179,4 +190,21 @@ public class SecurityConfig {
             .issuer(issuerUrl)
             .build();
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedMethods(List.of("POST", "GET", "PUT", "OPTIONS", "DELETE", "PATCH"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+
 }
