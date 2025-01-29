@@ -41,6 +41,7 @@
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
 
         <!-- Sonar -->
+        <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.language>java</sonar.language>
@@ -202,7 +203,7 @@
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>5.0.0.4389</version>
+                    <version>${sonar-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
