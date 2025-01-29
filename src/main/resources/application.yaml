@@ -20,8 +20,9 @@ server:
   
 logging:
   level:
-    org.zalando.logbook: TRACE  
-    
+    org.zalando.logbook: TRACE
+    org.springframework.security: TRACE
+
 management:
   health:
     readinessstate:
