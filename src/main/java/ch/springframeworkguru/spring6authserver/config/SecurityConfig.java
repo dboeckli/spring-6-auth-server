@@ -5,9 +5,13 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.annotation.PostConstruct;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -35,6 +39,7 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -51,6 +56,7 @@ import java.util.UUID;
 @Configuration
 @Slf4j
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.authorization-server.issuer:http://localhost:9000}")
@@ -62,13 +68,16 @@ public class SecurityConfig {
     @Value("${security.oauth2.authorization-server.token.refresh-token-time-to-live-seconds:3600}")
     private Integer refreshTokenTimeToLive;
 
-    @Value("${security.oauth2.authorization-server.cors.allowed-origins}")
-    private List<String> allowedOrigins;
+    private final AllowedOriginConfig allowedOriginConfig;
 
     public static final String LOGIN_URL = "http://localhost/login";
     public static final String REDIRECT_URL = "http://localhost/login/oauth2/code/messaging-client-oidc";
     public static final String REDIRECT_URI = "http://localhost/authorized";
-    
+
+    @PostConstruct
+    public void init() {
+        log.info("### Allowed origins: {}", allowedOriginConfig);
+    }
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -195,7 +204,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedOrigins(allowedOriginConfig.getAllowedOrigins());
         configuration.setAllowedMethods(List.of("POST", "GET", "PUT", "OPTIONS", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -206,5 +215,10 @@ public class SecurityConfig {
         return source;
     }
 
-
+    @Component
+    @ConfigurationProperties(prefix = "security.oauth2.authorization-server.cors")
+    @Data
+    public static class AllowedOriginConfig {
+        private List<String> allowedOrigins;
+    }
 }
