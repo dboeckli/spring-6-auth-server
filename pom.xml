@@ -614,6 +614,92 @@
             </plugin>
 
             <plugin>
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
+                <version>${helm.plugin.version}</version>
+                <extensions>true</extensions>
+
+                <configuration>
+                    <chartDirectory>${project.build.directory}/helm-charts/</chartDirectory>
+                    <!--suppress UnresolvedMavenProperty: helm.chart.version is set by maven antrun plugin -->
+                    <chartVersion>${helm.chart.version}</chartVersion>
+                    <skipLint>true</skipLint>
+                    <useLocalHelmBinary>true</useLocalHelmBinary>
+                    <skip>false</skip>
+                    <templateOutputDir>${project.build.directory}/helm-templated</templateOutputDir>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>execute-helm-lint</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>lint</goal> <!-- Locally render templates -->
+                        </goals>
+                        <configuration>
+                            <skipLint>false</skipLint>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>execute-helm-template</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>template</goal> <!-- Locally render templates -->
+                        </goals>
+                        <configuration>
+                            <skipTemplate>false</skipTemplate>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>execute-helm-dry-run</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>dry-run</goal> <!-- simulates an install. output goes to target/helm-templated -->
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>helm-package</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>package</goal> <!-- creates tgz file to target/helm -->
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>helm-login</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>registry-login</goal>
+                        </goals>
+                        <configuration>
+                            <uploadRepoStable>
+                                <name>stable-repo</name>
+                                <url>registry-1.docker.io</url>
+                                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                                <username>${env.DOCKER_USER}</username>  <!-- registry username -->
+                                <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
+                                <password>${env.DOCKER_TOKEN}</password> <!-- registry password or identity token -->
+                            </uploadRepoStable>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>helm-push</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <skipPushLogin>true</skipPushLogin>
+                            <uploadRepoStable>
+                                <name>stable-repo</name>
+                                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                                <url>registry-1.docker.io/${env.DOCKER_USER}</url>
+                            </uploadRepoStable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
