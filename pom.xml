@@ -95,6 +95,7 @@
             <properties>
                 <github.acions.build>true</github.acions.build>
                 <skip.docker.publish>false</skip.docker.publish>
+                <docker.repo>domboeckli</docker.repo>
             </properties>
         </profile>
 
