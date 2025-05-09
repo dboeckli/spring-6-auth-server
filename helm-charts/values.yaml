@@ -1,0 +1,50 @@
+replicaCount: 1
+
+image:
+  repository: @docker.repo@/@project.artifactId@
+  tag: @project.version@
+  pullPolicy: IfNotPresent
+
+# Namespace configuration
+# This defines the Kubernetes namespace where the resources will be deployed
+deployment:
+  namespace: spring-6-auth-server
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 9000
+  nodePort: 30900
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+global:
+  timezone: Europe/Zurich
+  timezonePath: /etc/localtime
+  springDebug: false
+
+spring:
+  profiles:
+    active: local
+
+probes:
+  startup:
+    failureThreshold: 30
+    periodSeconds: 10
+  readiness:
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+  liveness:
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+ingress:
+  enabled: false
