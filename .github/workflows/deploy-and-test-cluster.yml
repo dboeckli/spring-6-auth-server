@@ -63,6 +63,7 @@ jobs:
         run: |
           mvn -B versions:set -e -DnewVersion="$VERSION"
           mvn -B process-resources
+          echo "--- show k8s yaml"
           cat target/k8s/app.yml
           echo "Deploying Application $APPLICATION_NAME with version $VERSION"
           kubectl apply -f target/k8s/ --v=6
