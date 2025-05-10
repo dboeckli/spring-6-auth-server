@@ -143,8 +143,11 @@ jobs:
           helm pull oci://registry-1.docker.io/$DOCKER_USER/$APPLICATION_NAME --version "$HELM_CHART_VERSION"
           tar -xvf $APPLICATION_NAME-*.tgz  
           cd $APPLICATION_NAME
-          echo "Displaying Helm Chart Directory Structure (including files):"
+          echo "--- Displaying Helm Chart Directory Structure (including files):"
           tree -L 3 -a
+          echo "--- Displaying Values:"
+          cat values.yaml
+          echo "--- Displaying Deployment:"
           cat templates/deployment.yaml
 
       - name: Deploy application with Helm
