@@ -23,7 +23,7 @@ spec:
             - name: SPRING_APPLICATION_JSON
               value: '{"debug":{{ .Values.global.springDebug | default false }}}'
             - name: SPRING_SECURITY_OAUTH2_AUTHORIZATIONSERVER_ISSUER
-              value: {{ .Values.issuer.uri | default "http://localhost:9000" | quote }}
+              value: {{ .Values.spring.issuer.uri | quote }}
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"
             - name: SPRING_PROFILES_ACTIVE
