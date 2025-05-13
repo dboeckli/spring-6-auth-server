@@ -27,7 +27,7 @@ resources:
 
 spring:
   issuer:
-    uri: http://localhost:9000
+    uri: http://localhost:30900
   profiles:
     active: local
 

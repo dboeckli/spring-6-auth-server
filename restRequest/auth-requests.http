@@ -12,6 +12,7 @@ Content-Type: application/x-www-form-urlencoded
 
 token={{$auth.token("auth-id")}}&token_type_hint=access_token
 
+
 ###
 GET http://localhost:{{application-port}}/.well-known/openid-configuration
 Authorization: Basic messaging-client secret
