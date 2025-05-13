@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "application-template.fullname" . }}
-  namespace: {{ .Values.deployment.namespace }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     {{- include "application-template.labels" . | nindent 4 }}
 spec:
@@ -20,6 +20,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: SPRING_APPLICATION_JSON
+              value: '{"debug":{{ .Values.global.springDebug | default false }}}'
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"
             - name: SPRING_PROFILES_ACTIVE
