@@ -26,6 +26,8 @@ resources:
     memory: 512Mi
 
 spring:
+  issuer:
+    uri: http://localhost:30900
   profiles:
     active: local
 
