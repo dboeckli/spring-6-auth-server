@@ -218,6 +218,9 @@ jobs:
           APPLICATION_NAME: ${{ inputs.application-name }}
         run: |
           echo "Running tests for $APPLICATION_NAME in namespace $NAMESPACE"
+          echo "#### Cluster Info ---------------"
+          kubectl cluster-info --context kind-chart-testing
+          echo "#### Cluster Info ---------------"
 
           # Wait for the service to be available
           kubectl wait --for=condition=available --timeout=300s deployment/$APPLICATION_NAME -n $NAMESPACE
@@ -227,11 +230,6 @@ jobs:
           SERVICE_IP=$(kubectl get services -n $NAMESPACE $APPLICATION_NAME -o jsonpath='{.spec.clusterIP}')
           
           echo "#### SERVICE_IP: $SERVICE_IP"
-          
-          echo "#### debug ---------------"
-          kubectl cluster-info --context kind-chart-testing
-          echo "#### debug ---------------"
-          
           SERVICE_URL="http://${SERVICE_IP}:${NODE_PORT}"
 
           echo "Service URL: $SERVICE_URL"

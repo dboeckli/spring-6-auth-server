@@ -8,7 +8,8 @@
     "docker-compose",
     "maven-wrapper",
     "kubernetes",
-    "helm-charts"
+    "helm-values",
+    "helmv3"
   ],
   "maven-wrapper": {
     "fileMatch": [
@@ -28,14 +29,18 @@
   },
   "kubernetes": {
     "fileMatch": [
-      "k8s/.+\\.ya?ml$"
+      "k8s/.+\\.ya?ml$",
+      "helm-charts/templates/.+\\.ya?ml$"
     ]
   },
-  "helm-charts": {
+  "helm-values": {
     "fileMatch": [
-      "(^|/)Chart\\.yaml$",
-      "helm-charts/.+/values\\.ya?ml$",
-      "helm-charts/templates/.+\\.ya?ml$"
+      "helm-charts/.+/values\\.ya?ml$"
+    ]
+  },
+  "helmv3": {
+    "fileMatch": [
+      "(^|/)Chart\\.ya?ml$"
     ]
   },
   "packageRules": [
