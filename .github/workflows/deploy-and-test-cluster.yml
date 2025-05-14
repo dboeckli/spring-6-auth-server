@@ -224,7 +224,13 @@ jobs:
 
           # Get the NodePort of the service
           NODE_PORT=$(kubectl get -n $NAMESPACE -o jsonpath="{.spec.ports[0].nodePort}" services $APPLICATION_NAME)
-          SERVICE_URL="http://localhost:$NODE_PORT"
+          CLUSTER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kind-control-plane)
+          SERVICE_IP=$(kubectl get services -n $NAMESPACE $APPLICATION_NAME -o jsonpath='{.spec.clusterIP}')
+          
+          echo "#### CLUSTER_IP: $CLUSTER_IP" 
+          echo "#### SERVICE_IP: $SERVICE_IP"
+          
+          SERVICE_URL="http://${CLUSTER_IP}:${NODE_PORT}"
 
           echo "Service URL: $SERVICE_URL"
 
