@@ -12,38 +12,41 @@
     "helmv3"
   ],
   "maven-wrapper": {
-    "fileMatch": [
-      "(^|/)mvnw$",
-      "(^|/)mvnw.cmd$",
-      "(^|/).mvn/wrapper/maven-wrapper.properties$"
+    "managerFilePatterns": [
+      "/(^|/)mvnw$/",
+      "/(^|/)mvnw.cmd$/",
+      "/(^|/).mvn/wrapper/maven-wrapper.properties$/"
     ],
     "versioning": "maven"
   },
   "docker-compose": {
     "enabled": true
   },
-  "docker": {
-    "registryUrls": [
-      "https://index.docker.io"
-    ]
-  },
   "kubernetes": {
-    "fileMatch": [
-      "k8s/.+\\.ya?ml$",
-      "helm-charts/templates/.+\\.ya?ml$"
+    "managerFilePatterns": [
+      "/k8s/.+\\.ya?ml$/",
+      "/helm-charts/templates/.+\\.ya?ml$/"
     ]
   },
   "helm-values": {
-    "fileMatch": [
-      "helm-charts/.+/values\\.ya?ml$"
+    "managerFilePatterns": [
+      "/helm-charts/.+/values\\.ya?ml$/"
     ]
   },
   "helmv3": {
-    "fileMatch": [
-      "(^|/)Chart\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)Chart\\.ya?ml$/"
     ]
   },
   "packageRules": [
+    {
+      "matchCategories": [
+        "docker"
+      ],
+      "registryUrls": [
+        "https://index.docker.io"
+      ]
+    },
     {
       "matchDatasources": [
         "docker"
