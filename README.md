@@ -2,11 +2,7 @@
 
 ## spring-6-auth-server
 
-Welcome to your new project! This is an educational Spring Boot 3 / Spring Framework 6 web application, designed as part of the "Spring Framework 6 - Beginner to Guru" online course. 
-It's a great way to dive into the Spring Framework and learn by doing. 
-
-See: https://docs.spring.io/spring-authorization-server/reference/getting-started.html
-See: Chapter 22: Spring Authorization Server
+![Architecture Diagram](guru.png)
 
 ## Getting Started:
 Server runs on port 9000.
