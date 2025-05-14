@@ -20,6 +20,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: SPRING_APPLICATION_JSON
+              value: '{"debug":{{ .Values.global.springDebug | default false }}}'
+            - name: SPRING_SECURITY_OAUTH2_AUTHORIZATIONSERVER_ISSUER
+              value: {{ .Values.spring.issuer.uri | quote }}
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"
             - name: SPRING_PROFILES_ACTIVE

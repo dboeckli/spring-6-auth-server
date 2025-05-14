@@ -32,7 +32,7 @@ server:
 logging:
   level:
     org.zalando.logbook: TRACE
-    org.springframework.security: TRACE
+    org.springframework.security: INFO
 
 management:
   health:

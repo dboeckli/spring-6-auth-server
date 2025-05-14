@@ -13,7 +13,7 @@ image:
 
 service:
   type: NodePort
-  port: 80
+  port: 9000
   targetPort: 9000
   nodePort: 30900
 
@@ -26,6 +26,8 @@ resources:
     memory: 512Mi
 
 spring:
+  issuer:
+    uri: http://localhost:30900
   profiles:
     active: local
 
