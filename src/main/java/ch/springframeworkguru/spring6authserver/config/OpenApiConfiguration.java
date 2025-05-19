@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
     info = @Info(
-        title = "TODO",
+        title = "Spring Auth Server",
         description = "Some long and useful description",
         version = "TODO",
         license = @License(name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0")
