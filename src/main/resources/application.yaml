@@ -20,6 +20,7 @@ security:
           - http://localhost:8083
           - http://localhost:8084
           - http://localhost:9000
+          - http://localhost:30900 # when running in kubernetes
           - http://host.docker.internal:8080
           - http://host.docker.internal:8081
           - http://host.docker.internal:8082
