@@ -124,19 +124,7 @@
                 <docker.image.tag>release</docker.image.tag>
             </properties>
         </profile>
-        
-        <profile>
-            <id>master-branch</id>
-            <activation>
-                <property>
-                    <name>env.GITHUB_REF</name>
-                    <value>refs/heads/master</value>
-                </property>
-            </activation>
-            <properties>
-                <docker.image.tag>latest</docker.image.tag>
-            </properties>
-        </profile>
+
     </profiles>
     
     <distributionManagement>
