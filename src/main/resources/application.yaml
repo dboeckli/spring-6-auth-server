@@ -14,18 +14,41 @@ security:
         refresh-token-time-to-live-seconds: 3600  
       cors:
         allowed-origins:
+          # when running locally
           - http://localhost:8080
           - http://localhost:8081
           - http://localhost:8082
           - http://localhost:8083
           - http://localhost:8084
+          - http://localhost:8085
+          - http://localhost:8086
+          - http://localhost:8087
+          - http://localhost:8088
+          - http://localhost:8089
           - http://localhost:9000
-          - http://localhost:30900 # when running in kubernetes
+          # when running in kubernetes
+          - http://localhost:30080
+          - http://localhost:30081
+          - http://localhost:30082
+          - http://localhost:30083
+          - http://localhost:30084
+          - http://localhost:30085
+          - http://localhost:30086
+          - http://localhost:30087
+          - http://localhost:30088
+          - http://localhost:30089
+          - http://localhost:30900
+          # when running in docker container
           - http://host.docker.internal:8080
           - http://host.docker.internal:8081
           - http://host.docker.internal:8082
           - http://host.docker.internal:8083
           - http://host.docker.internal:8084
+          - http://host.docker.internal:8085
+          - http://host.docker.internal:8086
+          - http://host.docker.internal:8087
+          - http://host.docker.internal:8088
+          - http://host.docker.internal:8089
           - http://host.docker.internal:9000
 server:
   port: 9000

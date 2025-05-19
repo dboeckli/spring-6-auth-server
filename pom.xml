@@ -113,15 +113,15 @@
         </profile>
 
         <profile>
-            <id>release</id>
+            <id>main-branch</id>
             <activation>
                 <property>
-                    <name>performRelease</name>
-                    <value>true</value>
+                    <name>env.GITHUB_REF</name>
+                    <value>refs/heads/main</value>
                 </property>
             </activation>
             <properties>
-                <docker.image.tag>release</docker.image.tag>
+                <docker.image.tag>latest</docker.image.tag>
             </properties>
         </profile>
 
