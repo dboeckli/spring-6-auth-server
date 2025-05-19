@@ -100,11 +100,11 @@
         </profile>
 
         <profile>
-            <id>main-branch</id>
+            <id>master-branch</id>
             <activation>
                 <property>
                     <name>env.GITHUB_REF</name>
-                    <value>refs/heads/main</value>
+                    <value>refs/heads/master</value>
                 </property>
             </activation>
             <properties>
