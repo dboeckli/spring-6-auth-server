@@ -5,11 +5,12 @@
 ![Architecture Diagram](guru.png)
 
 ## Getting Started:
-Server runs on port 9000.
+Server runs on port 9000/30900.
 
 ## Swagger/Open Api 
 
-http://localhost:9000/swagger-ui/index.html
+- http://localhost:9000/swagger-ui/index.html
+- http://localhost:30900/swagger-ui/index.html
 
 ## Project Structure:
 `pom.xml`: This is your main Maven configuration file. It manages dependencies, plugins, and build settings.
