@@ -111,6 +111,20 @@
                 <docker.image.tag>latest</docker.image.tag>
             </properties>
         </profile>
+
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <docker.image.tag>release</docker.image.tag>
+            </properties>
+        </profile>
+        
         <profile>
             <id>master-branch</id>
             <activation>
