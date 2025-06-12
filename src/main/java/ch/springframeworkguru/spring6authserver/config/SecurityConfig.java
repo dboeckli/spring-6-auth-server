@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -205,7 +206,12 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(allowedOriginConfig.getAllowedOrigins());
-        configuration.setAllowedMethods(List.of("POST", "GET", "PUT", "OPTIONS", "DELETE", "PATCH"));
+        configuration.setAllowedMethods(List.of(HttpMethod.POST.name(),
+            HttpMethod.GET.name(),
+            HttpMethod.PUT.name(),
+            HttpMethod.OPTIONS.name(),
+            HttpMethod.DELETE.name(),
+            HttpMethod.PATCH.name()));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
