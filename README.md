@@ -85,9 +85,15 @@ show logs
 ```powershell
 kubectl get pods -l app.kubernetes.io/name=$APPLICATION_NAME -n spring-6-auth-server
 ```
+
 replace $POD with pods from the command above
 ```powershell
 kubectl logs $POD -n spring-6-auth-server --all-containers
+```
+
+test
+```powershell
+helm test $APPLICATION_NAME --namespace spring-6-auth-server --logs
 ```
 
 uninstall
