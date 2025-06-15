@@ -1,4 +1,8 @@
-1. Get the application access details:
+1. Get the application details:
+
+Application Name: {{ include "application-template.name" . }}
+Application Version: {{ .Chart.AppVersion }}
+Version: {{ .Chart.Version  }}
 
 FQDN of the service (inside the cluster):
   {{ include "application-template.serviceFQDN" . }}
