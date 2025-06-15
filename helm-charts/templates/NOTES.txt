@@ -1,8 +1,8 @@
 1. Get the application details:
 
-echo "Application Name: {{ include "application-template.name" . }}"
-echo "Application Version: {{ .Chart.AppVersion }}"
-echo "Version : {{ .Chart.Version  }}"
+Application Name: {{ include "application-template.name" . }}
+Application Version: {{ .Chart.AppVersion }}
+Version: {{ .Chart.Version  }}
 
 FQDN of the service (inside the cluster):
   {{ include "application-template.serviceFQDN" . }}
