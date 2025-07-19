@@ -93,7 +93,25 @@ logbook:
       - path: /h2-console/**  # Exclude H2 console
       - path: /swagger-ui/**  # Exclude Swagger UI if used
       - path: /v3/api-docs/** # Exclude OpenAPI docs if used
-        # Add more exclusions as needed      
+        # Exclude HTML-related calls and web resources
+      - path: /favicon.ico
+      - path: /**/*.html
+      - path: /**/*.css
+      - path: /**/*.js
+      - path: /**/*.png
+      - path: /**/*.jpg
+      - path: /**/*.jpeg
+      - path: /**/*.gif
+      - path: /**/*.ico
+      - path: /**/favicon.ico
+      - path: /**/webjars/**
+        # Exclude other common web resources
+      - path: /**/assets/**
+      - path: /**/static/**
+      - path: /**/public/**
+      - path: /**/resources/**
+      - path: /webjars/**
+        # Add more exclusions as needed
         
 springdoc:
   show-actuator: true
