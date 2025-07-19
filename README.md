@@ -101,5 +101,15 @@ uninstall
 helm uninstall $APPLICATION_NAME --namespace spring-6-auth-server
 ```
 
+delete all
+```powershell
+kubectl delete all --all -n spring-6-auth-server
+```
+
+create busybox sidecar
+```powershell
+kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=spring-6-auth-server --command -- sh
+```
+
 You can use the actuator rest call to verify via port 30900
 

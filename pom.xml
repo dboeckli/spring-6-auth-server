@@ -46,6 +46,7 @@
         <helm.plugin.version>6.17.0</helm.plugin.version>
         <properties-maven-plugin.version>1.2.1</properties-maven-plugin.version>
         <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
+        <merge-yaml-plugin.version>1.4</merge-yaml-plugin.version>
 
         <!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
         <springdoc.openapi.version>2.8.9</springdoc.openapi.version>
@@ -352,6 +353,9 @@
                     <execution>
                         <id>generate-helm-version</id>
                         <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                         <configuration>
                             <target>
                                 <propertyfile file="${project.build.directory}/helm.properties">
@@ -362,9 +366,19 @@
                                 <property file="${project.build.directory}/helm.properties" />
                             </target>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <phase>test</phase>
+                        <!-- the dependencies-values.yaml has been merge into the values.yaml file. we delete it before the helm plugin is running -->
+                        <id>delete-after-merge</id>
                         <goals>
                             <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <target>
+                                <delete file="${project.build.directory}/helm-charts/dependencies-values.yaml" />
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -444,6 +458,34 @@
                     </execution>
 
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>cd.connect.maven</groupId>
+                <artifactId>merge-yaml-plugin</artifactId>
+                <version>${merge-yaml-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>merge-values-yaml-files</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>mergeYaml</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${project.build.directory}/helm-charts/values.yaml</file>
+                                <file>${project.build.directory}/helm-charts/dependencies-values.yaml</file>
+                            </files>
+                            <finalYaml>${project.build.directory}/helm-charts/values.yaml</finalYaml>
+                            <flowStyle>BLOCK</flowStyle>
+                            <varSubstitution>MUSTACHE</varSubstitution>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <indentSize>2</indentSize>
+                    <lineLength>180</lineLength>
+                </configuration>
             </plugin>
             
             <!-- we need a port to be able to start the local profile -->
