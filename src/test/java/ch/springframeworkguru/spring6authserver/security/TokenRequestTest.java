@@ -3,8 +3,8 @@ package ch.springframeworkguru.spring6authserver.security;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -75,7 +75,7 @@ class TokenRequestTest {
         assertAll(
             () -> assertThat(setCookieHeader, nullValue()),  // TODO: SHOULD NOT BE NULL
             () -> assertThat(redirectLocation, notNullValue()),
-            () -> assertThat(REDIRECT_URL, startsWith(redirectLocation))
+            () -> assertThat(redirectLocation, startsWith(REDIRECT_URL))
         );
     }
 
