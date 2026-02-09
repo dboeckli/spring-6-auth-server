@@ -37,9 +37,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Show Version
+        env:
+          APP_NAME: ${{ inputs.application-name }}
+          APP_VERSION: ${{ inputs.version }}
+          TRIGGER_WORKFLOW: ${{ inputs.deployed-by-workflow }}
+          TRIGGER_BUILD: ${{ inputs.deployed-by-build }}
         run: |
-          echo "Deploying Application ${{ inputs.application-name }}, Version: ${{ inputs.version }}"
-          echo "Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}"
+          echo "Deploying Application $APP_NAME, Version: $APP_VERSION"
+          echo "Deployment triggered by workflow $TRIGGER_WORKFLOW. Run number: $TRIGGER_BUILD"
 
       - name: Check out the repository
         uses: actions/checkout@v6
@@ -123,9 +128,16 @@ jobs:
 
     steps:
       - name: Show Version
+        env:
+          APP_NAME: ${{ inputs.application-name }}
+          APP_VERSION: ${{ inputs.version }}
+          HELM_CHART_VERSION: ${{ inputs.helm-chart-version }}
+          NAMESPACE: ${{ inputs.namespace }}
+          TRIGGER_WORKFLOW: ${{ inputs.deployed-by-workflow }}
+          TRIGGER_BUILD: ${{ inputs.deployed-by-build }}
         run: |
-          echo "Deploying Application ${{ inputs.application-name }} with Version: ${{ inputs.version }}, Helm chart version: ${{ inputs.helm-chart-version }}, to namespace ${{ inputs.namespace }}"
-          echo "Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}"
+          echo "Deploying Application $APP_NAME with Version: $APP_VERSION, Helm chart version: $HELM_CHART_VERSION, to namespace $NAMESPACE"
+          echo "Deployment triggered by workflow $TRIGGER_WORKFLOW. Run number: $TRIGGER_BUILD"
 
       - name: Check out the repository
         uses: actions/checkout@v6
