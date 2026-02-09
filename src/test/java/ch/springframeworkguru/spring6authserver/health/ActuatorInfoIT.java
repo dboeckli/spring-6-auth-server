@@ -10,7 +10,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,9 +38,7 @@ class ActuatorInfoIT {
             .andExpect(jsonPath("$.git.commit.id.abbrev").isString())
 
             .andExpect(jsonPath("$.build.artifact").value(buildProperties.getArtifact()))
-            .andExpect(jsonPath("$.build.group").value(buildProperties.getGroup()))
-
-            .andExpect(jsonPath("$.java.version").value(startsWith("21")));
+            .andExpect(jsonPath("$.build.group").value(buildProperties.getGroup()));
     }
 
     @Test

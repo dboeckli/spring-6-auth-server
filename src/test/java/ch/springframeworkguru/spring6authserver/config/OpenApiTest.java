@@ -1,4 +1,4 @@
-package ch.springframeworkguru.spring6authserver.core;
+package ch.springframeworkguru.spring6authserver.config;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
