@@ -67,10 +67,10 @@ jobs:
           token: ${{ secrets.RELEASE_TOKEN }} 
           fetch-depth: 0
 
-      - name: Set up java 21
+      - name: Set up java
         uses: actions/setup-java@v5
         with:
-          java-version: 21
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
