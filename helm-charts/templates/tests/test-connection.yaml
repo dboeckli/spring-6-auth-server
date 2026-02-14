@@ -17,7 +17,9 @@ spec:
       command: [ '/bin/sh', '-c' ]
       args:
         - |
-          set -o errexit
+          set +o errexit
+          echo ">>> Start Test Auth Server"
+
           ERROR_OCCURED=0
 
           echo "### Test 1: Checking health endpoint using service short name: {{ include "application-template.fullname" . }}"
@@ -36,7 +38,6 @@ spec:
           fi
           echo "Exit code: $?"
 
-
           if [ $ERROR_OCCURED -ne 0 ]; then
             # Print DNS configuration
             echo "### DNS Configuration:"
@@ -48,5 +49,7 @@ spec:
             echo "nslookup AP_FQDN: $AP_FQDN"
             nslookup $AP_FQDN
           fi
+
+          echo ">>> End Test Auth Server"
 
   restartPolicy: Never
