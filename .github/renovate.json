@@ -9,10 +9,10 @@
     ],
     "customDatasources": {
         "custom_java": {
-            "defaultRegistryUrlTemplate": "https://api.adoptium.net/v3/info/available_releases",
+            "defaultRegistryUrlTemplate": "https://api.bell-sw.com/v1/liberica/versions",
             "format": "json",
             "transformTemplates": [
-                "{ \"releases\": $map(available_lts_releases, function($v) { { \"version\": $string($v) } }) }"
+                "{ \"releases\": $map($[LTS=true and GA=true], function($v) { { \"version\": $string($v.featureVersion) } }) }"
             ]
         }
     },
@@ -106,7 +106,7 @@
             "datasourceTemplate": "custom.custom_java",
             "depNameTemplate": "java",
             "managerFilePatterns": [
-                "/^\\.github\\/workflows\\/(release|maven-build)\\.ya?ml$/"
+                "/^\\.github\\/workflows\\/(release|maven-build|deploy-and-test-cluster)\\.ya?ml$/"
             ],
             "matchStrings": [
                 "  JAVA_VERSION:[\\t ]*(?<currentValue>\\d+)"
