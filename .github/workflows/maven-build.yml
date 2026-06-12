@@ -42,15 +42,6 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Add repsy server to settings.xml
-        run: |
-          sed -i '/<\/servers>/i \
-          <server>\
-            <id>repsy</id>\
-            <username>${env.REPSY_USERNAME}</username>\
-            <password>${env.REPSY_TOKEN}</password>\
-          </server>' $GITHUB_WORKSPACE/settings.xml    
-
       - name: Set Maven Versions
         id: set_version
         env:
@@ -117,9 +108,9 @@ jobs:
         run: |
           sed -i '/<\/servers>/i \
           <server>\
-            <id>repsy</id>\
-            <username>${env.REPSY_USERNAME}</username>\
-            <password>${env.REPSY_TOKEN}</password>\
+            <id>helm-repsy</id>\
+            <username>${env.HELM_REPSY_USER}</username>\
+            <password>${env.HELM_REPSY_TOKEN}</password>\
           </server>' $GITHUB_WORKSPACE/settings.xml     
 
       # TODO: Remove workaround when https://github.com/buildpacks/pack/issues/2270 is fixed
@@ -138,8 +129,8 @@ jobs:
         env:
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
-          REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
+          REPSY_USERNAME: ${{ vars.HELM_REPSY_USER }}
+          REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
           set -o pipefail
           set -o nounset
@@ -196,15 +187,15 @@ jobs:
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
-          REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
+          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
+          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
           
           # Check if required parameters are set
-          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN" "REPSY_USERNAME" "REPSY_TOKEN")
+          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN" "HELM_REPSY_USER" "HELM_REPSY_TOKEN")
           for param in "${required_params[@]}"; do
             if [ -z "${!param}" ]; then
               echo "::error::Required parameter $param is not set"
@@ -307,15 +298,13 @@ jobs:
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
-          REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
 
           # Check if required parameters are set
-          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN" "REPSY_USERNAME" "REPSY_TOKEN")
+          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
           for param in "${required_params[@]}"; do
             if [ -z "${!param}" ]; then
               echo "::error::Required parameter $param is not set"
