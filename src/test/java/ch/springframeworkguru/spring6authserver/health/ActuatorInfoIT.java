@@ -28,7 +28,6 @@ class ActuatorInfoIT {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-
     @Test
     void actuatorInfoTest() throws Exception {
         mockMvc.perform(get("/actuator/info"))
@@ -60,7 +59,8 @@ class ActuatorInfoIT {
         try {
             Object json = OBJECT_MAPPER.readValue(body, Object.class);
             return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(json);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // Falls kein valides JSON: unverändert zurückgeben
             return body;
         }
