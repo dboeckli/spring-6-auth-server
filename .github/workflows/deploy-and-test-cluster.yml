@@ -155,11 +155,10 @@ jobs:
       - name: Pull Helm Chart
         env:
           HELM_CHART_VERSION: ${{ inputs.helm-chart-version }}
-          DOCKER_USER: ${{ vars.DOCKER_USER }}
           APPLICATION_NAME: ${{ inputs.application-name }}
         run: |
           echo "Pulling Helm Chart Version: $HELM_CHART_VERSION"
-          helm pull oci://registry-1.docker.io/$DOCKER_USER/$APPLICATION_NAME --version "$HELM_CHART_VERSION"
+          helm pull oci://repo.repsy.io/user08694146/helm-dboeckli/$APPLICATION_NAME --version "$HELM_CHART_VERSION"
           tar -xvf $APPLICATION_NAME-*.tgz  
           cd $APPLICATION_NAME
           echo "--- Displaying Helm Chart Directory Structure (including files):"
