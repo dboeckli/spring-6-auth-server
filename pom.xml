@@ -768,7 +768,7 @@
               <skipPushLogin>true</skipPushLogin>
               <uploadRepoStable>
                 <name>stable-repo</name>
-                <url>oci://repo.repsy.io/user08694146/helm-dboeckli</url>
+                <url>repo.repsy.io/user08694146/helm-dboeckli</url>
               </uploadRepoStable>
             </configuration>
           </execution>
