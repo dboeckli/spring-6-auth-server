@@ -123,14 +123,12 @@ jobs:
         uses: helm/kind-action@v1.14.0
 
       - name: Helm workaround
-        # TODO: This is a workaround because the helm push does not work the standard way. helm login file under ~/.config/helm/registry/config.json is ignored.
+        # This is a workaround because the helm push does not work the standard way. helm login file under ~/.config/helm/registry/config.json is ignored.
         # Instead, we use the docker login file under ~/.docker/config.json
         # see: https://github.com/helm/helm/issues/30929 and https://github.com/helm/helm/issues/30942
         env:
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          REPSY_USERNAME: ${{ vars.HELM_REPSY_USER }}
-          REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
           set -o pipefail
           set -o nounset
@@ -143,7 +141,6 @@ jobs:
 
           # Base64-Encode: username:token
           AUTH=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64)
-          REPSY_AUTH=$(echo -n "$REPSY_USERNAME:$REPSY_TOKEN" | base64)
 
           # Zielverzeichnis anlegen
           mkdir -p ~/.docker
@@ -157,15 +154,12 @@ jobs:
               },
               "registry-1.docker.io": {
                 "auth": "$AUTH"
-              },
-              "repo.repsy.io": {
-                "auth": "$REPSY_AUTH"
               }
             }
           }
           EOF
 
-          echo "✅ Docker config.json added to ~/.docker/config.json"
+          echo "✅ Docker config.json added to ~/.docker/config.json" 
         
       - name: show variables
         id: show_build_variables
