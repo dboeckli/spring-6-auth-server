@@ -747,7 +747,7 @@
             <phase>deploy</phase>
             <configuration>
               <uploadRepoStable>
-                <name>stable-repo</name>
+                <name>repsy</name>
                 <url>repo.repsy.io</url>
                 <!--suppress UnresolvedMavenProperty: REPSY_USERNAME is set by GitHub Actions -->
                 <username>${env.REPSY_USERNAME}</username>
@@ -767,7 +767,7 @@
             <configuration>
               <skipPushLogin>true</skipPushLogin>
               <uploadRepoStable>
-                <name>stable-repo</name>
+                <name>repsy</name>
                 <url>repo.repsy.io/user08694146/helm-dboeckli</url>
               </uploadRepoStable>
             </configuration>
