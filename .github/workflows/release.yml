@@ -82,7 +82,16 @@ jobs:
           distribution: 'liberica'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file  
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+      - name: Add repsy server to settings.xml
+        run: |
+          sed -i '/<\/servers>/i \
+          <server>\
+            <id>repsy</id>\
+            <username>${env.REPSY_USERNAME}</username>\
+            <password>${env.REPSY_TOKEN}</password>\
+          </server>' $GITHUB_WORKSPACE/settings.xml    
           
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.14.0    
