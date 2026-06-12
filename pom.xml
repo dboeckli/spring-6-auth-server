@@ -745,12 +745,12 @@
             <configuration>
               <uploadRepoStable>
                 <name>stable-repo</name>
-                <url>registry-1.docker.io</url>
-                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                <username>${env.DOCKER_USER}</username>
+                <url>repo.repsy.io</url>
+                <!--suppress UnresolvedMavenProperty: REPSY_USERNAME is set by GitHub Actions -->
+                <username>${env.REPSY_USERNAME}</username>
                 <!-- registry username -->
-                <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
-                <password>${env.DOCKER_TOKEN}</password>
+                <!--suppress UnresolvedMavenProperty: REPSY_TOKEN is set by GitHub Actions -->
+                <password>${env.REPSY_TOKEN}</password>
                 <!-- registry password or identity token -->
               </uploadRepoStable>
             </configuration>
@@ -765,8 +765,7 @@
               <skipPushLogin>true</skipPushLogin>
               <uploadRepoStable>
                 <name>stable-repo</name>
-                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                <url>registry-1.docker.io/${env.DOCKER_USER}</url>
+                <url>oci://repo.repsy.io/user08694146/helm-dboeckli</url>
               </uploadRepoStable>
             </configuration>
           </execution>

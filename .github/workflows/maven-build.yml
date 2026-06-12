@@ -172,13 +172,15 @@ jobs:
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
+          REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
           
           # Check if required parameters are set
-          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
+          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN" "REPSY_USERNAME" "REPSY_TOKEN")
           for param in "${required_params[@]}"; do
             if [ -z "${!param}" ]; then
               echo "::error::Required parameter $param is not set"
@@ -272,13 +274,15 @@ jobs:
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
+          REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
 
           # Check if required parameters are set
-          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
+          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN" "REPSY_USERNAME" "REPSY_TOKEN")
           for param in "${required_params[@]}"; do
             if [ -z "${!param}" ]; then
               echo "::error::Required parameter $param is not set"
