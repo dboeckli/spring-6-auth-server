@@ -10,7 +10,7 @@
 
   <groupId>guru.springframework</groupId>
   <artifactId>spring-6-auth-server</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6-SNAPSHOT</version>
 
   <name>${project.artifactId}</name>
   <description>spring-6-auth-server</description>
@@ -22,7 +22,7 @@
   <scm>
     <connection>scm:git:https://github.com/${project.organization.name}/${project.artifactId}.git</connection>
     <developerConnection>scm:git:https://github.com/${project.organization.name}/${project.artifactId}.git</developerConnection>
-    <tag>spring-6-auth-server-0.0.5</tag>
+    <tag>HEAD</tag>
     <url>https://github.com/${project.organization.name}/${project.artifactId}.git</url>
   </scm>
 
