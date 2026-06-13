@@ -706,9 +706,6 @@
           <useLocalHelmBinary>true</useLocalHelmBinary>
           <skip>false</skip>
           <templateOutputDir>${project.build.directory}/helm-templated</templateOutputDir>
-          <!-- TODO: remove once repsy.io renews their TLS certificate -->
-          <insecure>true</insecure>
-
         </configuration>
 
         <executions>
