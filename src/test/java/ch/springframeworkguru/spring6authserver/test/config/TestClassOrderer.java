@@ -7,6 +7,7 @@ import org.junit.jupiter.api.ClassOrdererContext;
 import java.util.Comparator;
 
 public class TestClassOrderer implements ClassOrderer {
+
     @Override
     public void orderClasses(ClassOrdererContext classOrdererContext) {
         classOrdererContext.getClassDescriptors().sort(Comparator.comparingInt(TestClassOrderer::getOrder));
@@ -20,4 +21,5 @@ public class TestClassOrderer implements ClassOrderer {
             default -> Integer.MAX_VALUE;
         };
     }
+
 }

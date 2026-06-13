@@ -75,7 +75,9 @@ public class SecurityConfig {
     private final AllowedOriginConfig allowedOriginConfig;
 
     public static final String LOGIN_URL = "http://localhost/login";
+
     public static final String REDIRECT_URL = "http://localhost/login/oauth2/code/messaging-client-oidc";
+
     public static final String REDIRECT_URI = "http://localhost/authorized";
 
     @PostConstruct
@@ -85,43 +87,36 @@ public class SecurityConfig {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
-        
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
+            CorsConfigurationSource corsConfigurationSource) {
+
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
         http.with(authorizationServerConfigurer, Customizer.withDefaults());
 
-        http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource));
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource));
 
-        http
-            .getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-            .oidc(Customizer.withDefaults());    // Enable OpenID Connect 1.0
-        
+        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(Customizer.withDefaults()); // Enable
+                                                                                                       // OpenID
+                                                                                                       // Connect
+                                                                                                       // 1.0
+
         http
             // Redirect to the login page when not authenticated from the
             // authorization endpoint
-            .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(LOGIN_URL))
-            )
+            .exceptionHandling(
+                    exceptions -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(LOGIN_URL)))
             // Accept access tokens for User Info and/or Client Registration
-            .oauth2ResourceServer(resourceServer -> resourceServer
-                .jwt(Customizer.withDefaults()));
+            .oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()));
 
-        http
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()  // permit all actuator endpoints
-                .requestMatchers(
-                    "/v3/api-docs**",
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/.well-known/**").permitAll()
-                .anyRequest().authenticated()
-            )
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers(EndpointRequest.toAnyEndpoint())
+            .permitAll() // permit all actuator endpoints
+            .requestMatchers("/v3/api-docs**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+                    "/.well-known/**")
+            .permitAll()
+            .anyRequest()
+            .authenticated())
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
             // Form login handles the redirect to the login page from the
             // authorization server filter chain
             .formLogin(Customizer.withDefaults());
@@ -132,9 +127,10 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         @SuppressWarnings("deprecation")
-        UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN PROD
+        UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN
+                                                                    // PROD
             .username("user")
-            .password("password") //NOSONAR
+            .password("password") // NOSONAR
             .roles("USER")
             .build();
 
@@ -144,8 +140,8 @@ public class SecurityConfig {
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientId("messaging-client")  // TODO: DO NOT USE IN PROD
-            .clientSecret("{noop}secret")  // TODO: DO NOT USE IN PROD
+            .clientId("messaging-client") // TODO: DO NOT USE IN PROD
+            .clientSecret("{noop}secret") // TODO: DO NOT USE IN PROD
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
@@ -157,8 +153,8 @@ public class SecurityConfig {
             .scope("message.read")
             .scope("message.write")
             .tokenSettings(TokenSettings.builder()
-                .accessTokenTimeToLive(Duration.ofSeconds(accessTokenTimeToLive)) 
-                .refreshTokenTimeToLive(Duration.ofSeconds(refreshTokenTimeToLive)) 
+                .accessTokenTimeToLive(Duration.ofSeconds(accessTokenTimeToLive))
+                .refreshTokenTimeToLive(Duration.ofSeconds(refreshTokenTimeToLive))
                 .build())
             .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
             .build();
@@ -171,14 +167,12 @@ public class SecurityConfig {
         KeyPair keyPair = generateRsaKey();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-            .privateKey(privateKey)
+        RSAKey rsaKey = new RSAKey.Builder(publicKey).privateKey(privateKey)
             .keyID(UUID.randomUUID().toString())
             .build();
         JWKSet jwkSet = new JWKSet(rsaKey);
         return new ImmutableJWKSet<>(jwkSet);
     }
-
 
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
@@ -186,7 +180,8 @@ public class SecurityConfig {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             keyPair = keyPairGenerator.generateKeyPair();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
         return keyPair;
@@ -196,12 +191,10 @@ public class SecurityConfig {
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
-    
+
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder()
-            .issuer(issuerUrl)
-            .build();
+        return AuthorizationServerSettings.builder().issuer(issuerUrl).build();
     }
 
     @Bean
@@ -209,12 +202,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(allowedOriginConfig.getAllowedOrigins());
-        configuration.setAllowedMethods(List.of(HttpMethod.POST.name(),
-            HttpMethod.GET.name(),
-            HttpMethod.PUT.name(),
-            HttpMethod.OPTIONS.name(),
-            HttpMethod.DELETE.name(),
-            HttpMethod.PATCH.name()));
+        configuration.setAllowedMethods(List.of(HttpMethod.POST.name(), HttpMethod.GET.name(), HttpMethod.PUT.name(),
+                HttpMethod.OPTIONS.name(), HttpMethod.DELETE.name(), HttpMethod.PATCH.name()));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
@@ -228,6 +217,9 @@ public class SecurityConfig {
     @ConfigurationProperties(prefix = "security.oauth2.authorization-server.cors")
     @Data
     public static class AllowedOriginConfig {
+
         private List<String> allowedOrigins;
+
     }
+
 }

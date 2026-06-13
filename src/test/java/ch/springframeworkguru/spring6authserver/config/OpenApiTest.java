@@ -33,9 +33,7 @@ class OpenApiTest {
 
     @Test
     void openapiGetJsonTest() throws Exception {
-        MvcResult result = mockMvc.perform(get("/v3/api-docs"))
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult result = mockMvc.perform(get("/v3/api-docs")).andExpect(status().isOk()).andReturn();
 
         String jsonResponse = result.getResponse().getContentAsString();
         JsonNode jsonNode = objectMapper.readTree(jsonResponse);

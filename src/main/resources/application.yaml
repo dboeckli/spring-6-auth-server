@@ -5,13 +5,13 @@ spring:
     oauth2:
       authorization-server:
         issuer: http://localhost:9000
-        
+
 security:
   oauth2:
     authorization-server:
       token:
         access-token-time-to-live-seconds: 600
-        refresh-token-time-to-live-seconds: 3600  
+        refresh-token-time-to-live-seconds: 3600
       cors:
         allowed-origins:
           # when running locally
@@ -52,7 +52,7 @@ security:
           - http://host.docker.internal:9000
 server:
   port: 9000
-  
+
 logging:
   level:
     org.springframework.security: INFO
@@ -97,6 +97,8 @@ management:
       enabled: true
       include: request_headers, response_headers, session_id, time_taken
   observations:
+    annotations:
+      enabled: true
     http:
       server:
         requests:
@@ -129,5 +131,3 @@ springdoc:
   show-oauth2-endpoints: true
   api-docs:
     enabled: true
-
-

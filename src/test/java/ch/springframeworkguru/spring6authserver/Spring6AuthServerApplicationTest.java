@@ -15,11 +15,10 @@ class Spring6AuthServerApplicationTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-
     @Test
     void contextLoads() {
         assertNotNull(applicationContext, "Application context should not be null");
         log.info("Testing Spring 6 Application {}", applicationContext.getApplicationName());
     }
-  
+
 }

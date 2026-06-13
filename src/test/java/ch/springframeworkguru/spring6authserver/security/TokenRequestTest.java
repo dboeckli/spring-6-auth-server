@@ -20,18 +20,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
-// SEE: https://towardsdev.com/end-to-end-test-cases-for-spring-authorization-server-using-webclient-e3ed0397e036
-// AND https://github.com/TheSpaceCuber/spring-authorization-server-sample/blob/main/src/test/java/com/example/authorizationserver/AuthorizationServerDemoApplicationTests.java
+// SEE:
+// https://towardsdev.com/end-to-end-test-cases-for-spring-authorization-server-using-webclient-e3ed0397e036
+// AND
+// https://github.com/TheSpaceCuber/spring-authorization-server-sample/blob/main/src/test/java/com/example/authorizationserver/AuthorizationServerDemoApplicationTests.java
 class TokenRequestTest {
 
     private static final String CLIENT_ID = "messaging-client";
+
     private static final String CLIENT_SECRET = "secret";
-    private static final String AUTHORIZATION = Base64.getEncoder().encodeToString((CLIENT_ID + ":" + CLIENT_SECRET).getBytes());
-    
+
+    private static final String AUTHORIZATION = Base64.getEncoder()
+        .encodeToString((CLIENT_ID + ":" + CLIENT_SECRET).getBytes());
+
     private static final String GRANT_TYPE = "client_credentials";
 
     @Autowired
@@ -39,8 +43,8 @@ class TokenRequestTest {
 
     @Test
     void testClientCredentialsTokenRequest() throws Exception {
-        mockMvc.perform(post("/oauth2/token")
-                .header("Authorization", "Basic " + AUTHORIZATION)
+        mockMvc
+            .perform(post("/oauth2/token").header("Authorization", "Basic " + AUTHORIZATION)
                 .param("grant_type", GRANT_TYPE)
                 .param("scope", "message.read"))
             .andExpect(status().isOk())
@@ -53,7 +57,7 @@ class TokenRequestTest {
 
     @Test
     void testClientCredentialsAuthorize() throws Exception {
-        
+
         String authorizeUrl = UriComponentsBuilder.fromUriString("http://localhost:9000/oauth2/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", CLIENT_ID)
@@ -72,17 +76,16 @@ class TokenRequestTest {
         String setCookieHeader = authorizeResult.getResponse().getHeader(HttpHeaders.SET_COOKIE);
         log.info("Redirect location: {}", redirectLocation);
         log.info("SetCookieHeader: {}", setCookieHeader);
-        assertAll(
-            () -> assertThat(setCookieHeader, nullValue()),  // TODO: SHOULD NOT BE NULL
-            () -> assertThat(redirectLocation, notNullValue()),
-            () -> assertThat(redirectLocation, startsWith(REDIRECT_URL))
-        );
+        assertAll(() -> assertThat(setCookieHeader, nullValue()), // TODO: SHOULD NOT BE
+                                                                  // NULL
+                () -> assertThat(redirectLocation, notNullValue()),
+                () -> assertThat(redirectLocation, startsWith(REDIRECT_URL)));
     }
 
     @Test
     void testTokenIntrospection() throws Exception {
-        MvcResult tokenResult = mockMvc.perform(post("/oauth2/token")
-                .header("Authorization", "Basic " + AUTHORIZATION)
+        MvcResult tokenResult = mockMvc
+            .perform(post("/oauth2/token").header("Authorization", "Basic " + AUTHORIZATION)
                 .param("grant_type", GRANT_TYPE)
                 .param("scope", "message.read"))
             .andExpect(status().isOk())
@@ -91,8 +94,8 @@ class TokenRequestTest {
         String tokenResponse = tokenResult.getResponse().getContentAsString();
         String accessToken = extractAccessToken(tokenResponse);
 
-        mockMvc.perform(post("/oauth2/introspect")
-                .header("Authorization", "Basic " + AUTHORIZATION)
+        mockMvc
+            .perform(post("/oauth2/introspect").header("Authorization", "Basic " + AUTHORIZATION)
                 .param("token", accessToken)
                 .param("token_type_hint", "access_token"))
             .andExpect(status().isOk())
@@ -107,15 +110,15 @@ class TokenRequestTest {
     void testTokenInvalidIntrospection() throws Exception {
         String invalidAccessToken = "invalid_token";
 
-        mockMvc.perform(post("/oauth2/introspect")
-                .header("Authorization", "Basic " + AUTHORIZATION)
+        mockMvc
+            .perform(post("/oauth2/introspect").header("Authorization", "Basic " + AUTHORIZATION)
                 .param("token", invalidAccessToken)
                 .param("token_type_hint", "access_token"))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.active", is(false)));
     }
-   
+
     private String extractAccessToken(String tokenResponse) {
         // Simple string manipulation to extract the access token
         // In a real-world scenario, you might want to use a JSON parser
@@ -124,7 +127,4 @@ class TokenRequestTest {
         return tokenResponse.substring(start, end);
     }
 
-    
-
-    
 }
