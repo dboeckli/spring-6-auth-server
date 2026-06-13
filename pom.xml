@@ -50,6 +50,7 @@
     <docker.repo>local</docker.repo>
 
     <logstash-logback.version>9.0</logstash-logback.version>
+    <logback-ecs-encoder.version>1.8.0</logback-ecs-encoder.version>
 
     <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
     <spotless-maven-plugin.version>3.6.0</spotless-maven-plugin.version>
@@ -113,11 +114,21 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-opentelemetry</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-aspectj</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>net.logstash.logback</groupId>
       <artifactId>logstash-logback-encoder</artifactId>
       <version>${logstash-logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>co.elastic.logging</groupId>
+      <artifactId>logback-ecs-encoder</artifactId>
+      <version>${logback-ecs-encoder.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- springdoc openapi -->

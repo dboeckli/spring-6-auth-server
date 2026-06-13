@@ -1,7 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Spring6AuthServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <log_file alias="spring.log" path="$PROJECT_DIR$/target/logs/spring.log" />
+    <log_file alias="spring-ecs.log" path="$PROJECT_DIR$/target/logs/spring-ecs.log" />
     <module name="spring-6-auth-server" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="ch.springframeworkguru.spring6authserver.Spring6AuthServerApplication" />
+    <option name="VM_PARAMETERS" value="-Dlogging.config=classpath:logback-local.xml" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
