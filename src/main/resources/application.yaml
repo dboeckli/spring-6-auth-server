@@ -5,6 +5,9 @@ spring:
     oauth2:
       authorization-server:
         issuer: http://localhost:9000
+  task:
+    execution:
+      propagate-context: true
 
 security:
   oauth2:
