@@ -8,6 +8,9 @@ spring:
   task:
     execution:
       propagate-context: true
+  threads:
+    virtual:
+      enabled: true
 
 security:
   oauth2:
