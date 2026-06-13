@@ -5,7 +5,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>4.1.0</version>
-    <relativePath/>
+    <relativePath />
   </parent>
 
   <groupId>guru.springframework</groupId>
@@ -274,10 +274,10 @@
             </excludes>
             <sortPom>
               <expandEmptyElements>false</expandEmptyElements>
-              <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
+              <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
               <!-- Verhindert dass sortPom beim Release die pom.xml neu formatiert -->
-              <sortDependencies/>
-              <sortPlugins/>
+              <sortDependencies />
+              <sortPlugins />
             </sortPom>
           </pom>
           <markdown>
@@ -288,7 +288,7 @@
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
-            <flexmark/>
+            <flexmark />
           </markdown>
           <json>
             <includes>
@@ -300,14 +300,14 @@
               <exclude>.github/**</exclude>
               <exclude>.idea/**</exclude>
             </excludes>
-            <prettier/>
+            <prettier />
           </json>
           <yaml>
             <includes>
               <include>src/main/resources/application*.yaml</include>
               <include>src/main/resources/application*.yml</include>
             </includes>
-            <prettier/>
+            <prettier />
           </yaml>
           <shell>
             <includes>
@@ -411,11 +411,11 @@
             <configuration>
               <target>
                 <propertyfile file="${project.build.directory}/helm.properties">
-                  <entry key="helm.chart.version" value="v${project.version}"/>
+                  <entry key="helm.chart.version" value="v${project.version}" />
                 </propertyfile>
                 <!--suppress UnresolvedMavenProperty: git.commit.id.abbrev is set by git git-commit-id-maven-plugin -->
-                <replaceregexp byline="true" file="${project.build.directory}/helm.properties" match="helm\.chart\.version=(v[0-9]+\.[0-9]+\.[0-9]+)_.*-SNAPSHOT" replace="helm.chart.version=\1-${git.commit.id.abbrev}"/>
-                <property file="${project.build.directory}/helm.properties"/>
+                <replaceregexp byline="true" file="${project.build.directory}/helm.properties" match="helm\.chart\.version=(v[0-9]+\.[0-9]+\.[0-9]+)_.*-SNAPSHOT" replace="helm.chart.version=\1-${git.commit.id.abbrev}" />
+                <property file="${project.build.directory}/helm.properties" />
               </target>
             </configuration>
           </execution>
@@ -428,7 +428,7 @@
             <phase>test</phase>
             <configuration>
               <target>
-                <delete file="${project.build.directory}/helm-charts/dependencies-values.yaml"/>
+                <delete file="${project.build.directory}/helm-charts/dependencies-values.yaml" />
               </target>
             </configuration>
           </execution>
