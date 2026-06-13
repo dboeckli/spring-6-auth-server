@@ -163,20 +163,6 @@ jobs:
           helm pull oci://repo.repsy.io/user08694146/helm-dboeckli/$APPLICATION_NAME --version "$HELM_CHART_VERSION"
           tar -xvf $APPLICATION_NAME-*.tgz
 
-          # Delete only feature branch builds (not SNAPSHOT, not clean release like v1.2.3)
-          if [[ "$HELM_CHART_VERSION" != *"SNAPSHOT"* ]] && ! [[ "$HELM_CHART_VERSION" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Deleting feature branch Helm Chart Version $HELM_CHART_VERSION from repsy..."
-            DIGEST=$(curl -s -u "$HELM_REPSY_USER:$HELM_REPSY_TOKEN" \
-              "https://repo.repsy.io/v2/user08694146/helm-dboeckli/$APPLICATION_NAME/manifests/$HELM_CHART_VERSION" \
-              -H "Accept: application/vnd.oci.image.manifest.v1+json" \
-              -I | grep -i 'docker-content-digest' | awk '{print $2}' | tr -d '\r')
-            echo "Digest: $DIGEST"
-            curl -s -u "$HELM_REPSY_USER:$HELM_REPSY_TOKEN" -X DELETE \
-              "https://repo.repsy.io/v2/user08694146/helm-dboeckli/$APPLICATION_NAME/manifests/$DIGEST"
-            echo "✅ Helm Chart deleted from repsy"
-          else
-            echo "ℹ️ Skipping delete: $HELM_CHART_VERSION is a SNAPSHOT or release version"
-          fi
           cd $APPLICATION_NAME
           echo "--- Displaying Helm Chart Directory Structure (including files):"
           tree -L 3 -a
