@@ -262,6 +262,7 @@
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
         <version>${spotless-maven-plugin.version}</version>
+
         <configuration>
           <pom>
             <includes>
@@ -274,6 +275,9 @@
             <sortPom>
               <expandEmptyElements>false</expandEmptyElements>
               <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
+              <!-- Verhindert dass sortPom beim Release die pom.xml neu formatiert -->
+              <sortDependencies/>
+              <sortPlugins/>
             </sortPom>
           </pom>
           <markdown>
