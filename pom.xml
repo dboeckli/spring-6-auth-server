@@ -5,6 +5,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>4.1.0</version>
+    <!-- to avoid conflicts between sortpom and release maven plugin, we add here the space before the closing slash -->
     <relativePath />
   </parent>
 
@@ -274,6 +275,7 @@
             </excludes>
             <sortPom>
               <expandEmptyElements>false</expandEmptyElements>
+              <!-- to avoid conflicts with release maven plugin -->
               <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
               <!-- Verhindert dass sortPom beim Release die pom.xml neu formatiert -->
               <sortDependencies />
