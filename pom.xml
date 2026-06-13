@@ -271,7 +271,10 @@
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
-            <sortPom/>
+            <sortPom>
+              <expandEmptyElements>false</expandEmptyElements>
+              <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
+            </sortPom>
           </pom>
           <markdown>
             <includes>
