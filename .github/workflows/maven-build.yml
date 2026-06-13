@@ -270,9 +270,9 @@ jobs:
         run: |
           sed -i '/<\/servers>/i \
           <server>\
-            <id>repsy</id>\
-            <username>${env.REPSY_USERNAME}</username>\
-            <password>${env.REPSY_TOKEN}</password>\
+            <id>helm-repsy</id>\
+            <username>${env.HELM_REPSY_USER}</username>\
+            <password>${env.HELM_REPSY_TOKEN}</password>\
           </server>' $GITHUB_WORKSPACE/settings.xml     
 
       # TODO: Remove workaround when https://github.com/buildpacks/pack/issues/2270 is fixed

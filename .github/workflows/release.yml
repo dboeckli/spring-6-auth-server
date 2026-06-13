@@ -88,9 +88,9 @@ jobs:
         run: |
           sed -i '/<\/servers>/i \
           <server>\
-            <id>repsy</id>\
-            <username>${env.REPSY_USERNAME}</username>\
-            <password>${env.REPSY_TOKEN}</password>\
+            <id>helm-repsy</id>\
+            <username>${env.HELM_REPSY_USER}</username>\
+            <password>${env.HELM_REPSY_TOKEN}</password>\
           </server>' $GITHUB_WORKSPACE/settings.xml    
           
       - name: Create k8s Kind Cluster
@@ -124,9 +124,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
+          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
           # Check if required parameters are set
-          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "DOCKER_USER" "DOCKER_TOKEN")
+          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "DOCKER_USER" "DOCKER_TOKEN" "HELM_REPSY_USER" "HELM_REPSY_TOKEN")
           for param in "${required_params[@]}"; do
           if [ -z "${!param}" ]; then
             echo "::error::Required parameter $param is not set"
