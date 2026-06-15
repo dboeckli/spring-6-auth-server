@@ -126,9 +126,8 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        @SuppressWarnings("deprecation")
-        UserDetails userDetails = User.withDefaultPasswordEncoder() // TODO: DO NOT USE IN
-                                                                    // PROD
+        // TODO: DO NOT USE IN PROD
+        UserDetails userDetails = User.withDefaultPasswordEncoder()
             .username("user")
             .password("password") // NOSONAR
             .roles("USER")

@@ -25,7 +25,6 @@ public class ConfigChangeListener {
     @Observed(name = "config.change.listener", contextualName = "handle-context-refresh")
     public void handleContextRefresh(ContextRefreshedEvent event) {
         final Environment env = event.getApplicationContext().getEnvironment();
-        log.debug(LogMessage.RECEIVED_CONTEXT_REFRESH_EVENT.getMessage());
         log.info("Active profiles: {}", Arrays.toString(env.getActiveProfiles()));
         final MutablePropertySources sources = ((AbstractEnvironment) env).getPropertySources();
         StreamSupport.stream(sources.spliterator(), false)
