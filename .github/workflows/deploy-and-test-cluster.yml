@@ -50,7 +50,7 @@ jobs:
           echo "Deployment triggered by workflow $TRIGGER_WORKFLOW. Run number: $TRIGGER_BUILD"
 
       - name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - uses: mfinelli/setup-shfmt@v4
         with:
@@ -147,7 +147,7 @@ jobs:
           echo "Deployment triggered by workflow $TRIGGER_WORKFLOW. Run number: $TRIGGER_BUILD"
 
       - name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.14.0
