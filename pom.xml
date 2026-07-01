@@ -784,7 +784,7 @@
             <configuration>
               <skipPushLogin>true</skipPushLogin>
               <uploadRepoStable>
-                <name>repsy</name>
+                <name>helm-repsy</name>
                 <url>repo.repsy.io/user08694146/helm-dboeckli</url>
               </uploadRepoStable>
             </configuration>
