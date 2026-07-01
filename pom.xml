@@ -49,6 +49,7 @@
     <docker.image.tag>development</docker.image.tag>
     <!-- for feature branches -->
     <docker.repo>local</docker.repo>
+    <helm.snapshot.suffix>snapshot.${git.commit.id.abbrev}</helm.snapshot.suffix>
 
     <logstash-logback.version>9.0</logstash-logback.version>
     <logback-ecs-encoder.version>1.8.0</logback-ecs-encoder.version>
@@ -413,14 +414,15 @@
             <configuration>
               <target>
                 <propertyfile file="${project.build.directory}/helm.properties">
-                  <entry key="helm.chart.version" value="v${project.version}" />
+                  <entry key="helm.chart.version" value="${project.version}" />
                 </propertyfile>
-                <!--suppress UnresolvedMavenProperty: git.commit.id.abbrev is set by git git-commit-id-maven-plugin -->
-                <replaceregexp byline="true" file="${project.build.directory}/helm.properties" match="helm\.chart\.version=(v[0-9]+\.[0-9]+\.[0-9]+)_.*-SNAPSHOT" replace="helm.chart.version=\1-${git.commit.id.abbrev}" />
+                <!--suppress UnresolvedMavenProperty: git.commit.id.abbrev is set by git-commit-id-maven-plugin -->
+                <replaceregexp byline="true" file="${project.build.directory}/helm.properties" match="helm\.chart\.version=([0-9]+\.[0-9]+\.[0-9]+)-SNAPSHOT" replace="helm.chart.version=\1-${helm.snapshot.suffix}" />
                 <property file="${project.build.directory}/helm.properties" />
               </target>
             </configuration>
           </execution>
+
           <execution>
             <!-- the dependencies-values.yaml has been merge into the values.yaml file. we delete it before the helm plugin is running -->
             <id>delete-after-merge</id>
@@ -885,6 +887,7 @@
       </activation>
       <properties>
         <docker.image.tag>latest</docker.image.tag>
+        <helm.snapshot.suffix>snapshot</helm.snapshot.suffix>
       </properties>
     </profile>
 
@@ -898,6 +901,7 @@
       </activation>
       <properties>
         <docker.image.tag>latest</docker.image.tag>
+        <helm.snapshot.suffix>snapshot</helm.snapshot.suffix>
       </properties>
     </profile>
 
