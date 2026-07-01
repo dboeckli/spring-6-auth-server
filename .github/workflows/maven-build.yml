@@ -153,9 +153,9 @@ jobs:
           echo "Helm version:"
           helm version --short
 
-          # Base64-Encode: username:token
-          AUTH_DOCKER=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64)
-          AUTH_REPSY=$(echo -n "$HELM_REPSY_USER:$HELM_REPSY_TOKEN" | base64)
+          # Base64-Encode: username:token (no line wrapping to keep JSON valid)
+          AUTH_DOCKER=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64 -w 0)
+          AUTH_REPSY=$(echo -n "$HELM_REPSY_USER:$HELM_REPSY_TOKEN" | base64 -w 0)
 
           # Zielverzeichnis anlegen
           mkdir -p ~/.docker
