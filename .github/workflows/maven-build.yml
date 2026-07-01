@@ -105,7 +105,19 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Add repsy server to settings.xml
+        env:
+          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
+          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
+          # Check if required parameters are set
+          required_params=("HELM_REPSY_USER" "HELM_REPSY_TOKEN")
+          for param in "${required_params[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+          
           sed -i '/<\/servers>/i \
           <server>\
             <id>helm-repsy</id>\
@@ -267,7 +279,19 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Add repsy server to settings.xml
+        env:
+          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
+          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
+          # Check if required parameters are set
+          required_params=("HELM_REPSY_USER" "HELM_REPSY_TOKEN")
+          for param in "${required_params[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+          
           sed -i '/<\/servers>/i \
           <server>\
             <id>helm-repsy</id>\
