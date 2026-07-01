@@ -6,7 +6,7 @@
 
 ## Getting Started:
 
-Server runs on port 9000/30900.
+Server runs on port 9000/30900
 
 ## Swagger/Open Api
 
