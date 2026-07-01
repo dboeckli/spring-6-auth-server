@@ -141,6 +141,8 @@ jobs:
         env:
           DOCKER_USER: ${{ vars.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
+          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
           set -o pipefail
           set -o nounset
@@ -152,7 +154,8 @@ jobs:
           helm version --short
 
           # Base64-Encode: username:token
-          AUTH=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64)
+          AUTH_DOCKER=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64)
+          AUTH_REPSY=$(echo -n "$HELM_REPSY_USER:$HELM_REPSY_TOKEN" | base64)
 
           # Zielverzeichnis anlegen
           mkdir -p ~/.docker
@@ -162,16 +165,19 @@ jobs:
           {
             "auths": {
               "https://index.docker.io/v1/": {
-                "auth": "$AUTH"
+                "auth": "$AUTH_DOCKER"
               },
               "registry-1.docker.io": {
-                "auth": "$AUTH"
+                "auth": "$AUTH_DOCKER"
+              },
+              "repo.repsy.io": {
+                "auth": "$AUTH_REPSY"
               }
             }
           }
           EOF
 
-          echo "✅ Docker config.json added to ~/.docker/config.json" 
+          echo "✅ Docker config.json added to ~/.docker/config.json"
         
       - name: show variables
         id: show_build_variables
