@@ -424,7 +424,10 @@
           </execution>
 
           <execution>
-            <!-- the dependencies-values.yaml has been merge into the values.yaml file. we delete it before the helm plugin is running -->
+            <!--
+            the dependencies-values.yaml has been merge into the values.yaml file.
+            we delete it before the helm plugin is running
+            -->
             <id>delete-after-merge</id>
             <goals>
               <goal>run</goal>
@@ -486,9 +489,10 @@
           </execution>
 
           <!--
-                        This execution copies helm charts and puts them into the target directory 'helm-charts'. The helm charts are used to deploy the project.
-                        During the build some variables are resolved by maven filtering (e.g. the project version).
-                    -->
+            This execution copies helm charts and puts them into the target directory 'helm-charts'.
+            The helm charts are used to deploy the project.
+            During the build some variables are resolved by maven filtering (e.g. the project version).
+          -->
           <execution>
             <id>copy-and-filter-helm-charts-to-target</id>
             <goals>
@@ -639,7 +643,7 @@
             <configuration>
               <skip>${skip.docker.build}</skip>
               <image>
-                <name>local/${project.artifactId}:${project.version}</name>
+                <name>local/${project.artifactId}:${helm.chart.version}</name>
                 <tags>local/${project.artifactId}:${docker.image.tag}</tags>
                 <publish>false</publish>
               </image>
@@ -655,7 +659,7 @@
             <configuration>
               <skip>${skip.docker.publish}</skip>
               <image>
-                <name>ghcr.io/${project.organization.name}/${project.artifactId}:${project.version}</name>
+                <name>ghcr.io/${project.organization.name}/${project.artifactId}:${helm.chart.version}</name>
                 <tags>ghcr.io/${project.organization.name}/${project.artifactId}:${docker.image.tag}</tags>
                 <publish>true</publish>
               </image>
@@ -682,7 +686,7 @@
               <skip>${skip.docker.publish}</skip>
               <image>
                 <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
-                <name>${env.DOCKER_USER}/${project.artifactId}:${project.version}</name>
+                <name>${env.DOCKER_USER}/${project.artifactId}:${helm.chart.version}</name>
                 <tags>
                   <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
                   ${env.DOCKER_USER}/${project.artifactId}:${docker.image.tag}
