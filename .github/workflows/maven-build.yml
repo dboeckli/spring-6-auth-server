@@ -236,7 +236,7 @@ jobs:
           echo "### helm chart version is: $HELM_CHART_VERSION"
           echo "HELM_CHART_VERSION=$HELM_CHART_VERSION" >> $GITHUB_OUTPUT
           
-          YAML_FILE="target/helm-templated/$ARTIFACT_ID/templates/deployment.yaml"
+          YAML_FILE="target/helm-templated/$ARTIFACT_ID-chart/templates/deployment.yaml"
           if [ -f "$YAML_FILE" ]; then
             NAMESPACE=$(grep '^\s*namespace:' "$YAML_FILE" | awk '{print $2}' | tr -d '"')
             if [ -z "$NAMESPACE" ]; then

@@ -160,7 +160,7 @@ jobs:
           HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
         run: |
           echo "Pulling Helm Chart Version: $HELM_CHART_VERSION"
-          helm pull oci://repo.repsy.io/user08694146/helm-dboeckli/$APPLICATION_NAME --version "$HELM_CHART_VERSION"
+          helm pull oci://repo.repsy.io/user08694146/helm-dboeckli/$APPLICATION_NAME-chart --version "$HELM_CHART_VERSION"
           tar -xvf $APPLICATION_NAME-*.tgz
 
           cd $APPLICATION_NAME
@@ -179,7 +179,7 @@ jobs:
         run: |
           # Install/upgrade the Helm chart
           echo "Deploying Application: $APP_VERSION"
-          helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME \
+          helm upgrade --install $APPLICATION_NAME-chart ./$APPLICATION_NAME \
           --set image.tag=${APP_VERSION} \
           --namespace ${NAMESPACE} \
           --create-namespace \
