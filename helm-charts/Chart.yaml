@@ -1,5 +1,5 @@
 apiVersion: v2
-name: @project.artifactId@
+name: @project.artifactId@-chart
 description: A Helm chart for Spring 6 Projects
 type: application
 # Disable Sonar warning for invalid semver: This value is set by Maven filtering
