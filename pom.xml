@@ -47,7 +47,6 @@
     <skip.start.stop.springboot>false</skip.start.stop.springboot>
 
     <docker.image.tag>development</docker.image.tag>
-    <!-- for feature branches -->
     <docker.repo>local</docker.repo>
     <helm.snapshot.suffix>snapshot.${git.commit.id.abbrev}</helm.snapshot.suffix>
 
@@ -882,6 +881,19 @@
     </profile>
 
     <profile>
+      <id>release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+        <docker.image.tag>latest</docker.image.tag>
+      </properties>
+    </profile>
+
+    <profile>
       <id>master-branch</id>
       <activation>
         <property>
@@ -890,7 +902,7 @@
         </property>
       </activation>
       <properties>
-        <docker.image.tag>latest</docker.image.tag>
+        <docker.image.tag>snapshot</docker.image.tag>
         <helm.snapshot.suffix>snapshot</helm.snapshot.suffix>
       </properties>
     </profile>
@@ -904,7 +916,7 @@
         </property>
       </activation>
       <properties>
-        <docker.image.tag>latest</docker.image.tag>
+        <docker.image.tag>snapshot</docker.image.tag>
         <helm.snapshot.suffix>snapshot</helm.snapshot.suffix>
       </properties>
     </profile>
