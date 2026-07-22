@@ -179,7 +179,7 @@ jobs:
         run: |
           # Install/upgrade the Helm chart
           echo "Deploying Application: $APP_VERSION"
-          helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME \
+          helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME-chart \
           --set image.tag=${APP_VERSION} \
           --namespace ${NAMESPACE} \
           --create-namespace \
