@@ -142,4 +142,7 @@ jobs:
             exit 1
           fi
           done
-          mvn -B release:prepare release:perform -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B release:prepare release:perform \
+            -DperformRelease=true \
+            -Darguments="-s $GITHUB_WORKSPACE/settings.xml" \
+            -s $GITHUB_WORKSPACE/settings.xml
