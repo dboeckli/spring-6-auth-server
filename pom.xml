@@ -896,11 +896,11 @@
     <profile>
       <id>master-branch</id>
       <activation>
+        <activeByDefault>false</activeByDefault>
         <property>
           <name>env.GITHUB_REF</name>
           <value>refs/heads/master</value>
         </property>
-        <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
         <docker.image.tag>snapshot</docker.image.tag>
@@ -911,11 +911,11 @@
     <profile>
       <id>main-branch</id>
       <activation>
+        <activeByDefault>false</activeByDefault>
         <property>
           <name>env.GITHUB_REF</name>
           <value>refs/heads/main</value>
         </property>
-        <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
         <docker.image.tag>snapshot</docker.image.tag>
