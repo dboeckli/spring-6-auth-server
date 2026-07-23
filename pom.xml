@@ -900,6 +900,7 @@
           <name>env.GITHUB_REF</name>
           <value>refs/heads/master</value>
         </property>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
         <docker.image.tag>snapshot</docker.image.tag>
@@ -914,6 +915,7 @@
           <name>env.GITHUB_REF</name>
           <value>refs/heads/main</value>
         </property>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
         <docker.image.tag>snapshot</docker.image.tag>
