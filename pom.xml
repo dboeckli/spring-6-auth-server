@@ -301,6 +301,7 @@
             </includes>
             <excludes>
               <exclude>AGENTS.md</exclude>
+              <exclude>CLAUDE.md</exclude>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
