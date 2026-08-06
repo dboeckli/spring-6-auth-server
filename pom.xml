@@ -300,6 +300,7 @@
               <include>**/*.md</include>
             </includes>
             <excludes>
+              <exclude>AGENTS.md</exclude>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
             </excludes>
