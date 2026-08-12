@@ -2,11 +2,69 @@
 
 ## spring-6-auth-server
 
-![Architecture Diagram](guru.png)
+```mermaid
+flowchart LR
+    subgraph AuthServer["🔑 Auth Server :9000"]
+        Auth["Authorization Server"]
+    end
+
+    subgraph ClientSide["Client"]
+        Browser["💻 Browser"]
+    end
+
+    subgraph ResourceSide["Resource Server"]
+        Service["📦 Service"]
+    end
+
+    subgraph UserSide["End User"]
+        User["👤 User"]
+    end
+
+    User ===>|"login"| Browser
+    Browser <==>|"OAuth2 token flow<br/>(erhält access token)"| Auth
+    Browser -->|"access token"| Service
+    Service -.->|"JWT validation (JWKS / Introspect)"| Auth
+
+    style AuthServer fill:#ff9999,stroke:#333,stroke-width:2px
+    style ResourceSide fill:#ffcc99,stroke:#333,stroke-width:2px
+    style Browser fill:#eeeeee,stroke:#333,stroke-width:2px
+```
 
 ## Getting Started:
 
 Server runs on port 9000/30900
+
+## Sandbox
+
+Initial setup (one-time, allow sandbox kit sources):
+
+```powershell
+sbx settings set kit.allowedSources --% "[\"docker.io/\",\"github.com/dboeckli/\"]"
+```
+
+Add the sandbox kit:
+
+```powershell
+sbx kit add git+https://github.com/dboeckli/opencode-sandbox-kit.git
+```
+
+Start the sandbox (usually from PowerShell):
+
+```powershell
+sbx run opencode --name spring-6-auth-server --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "C:\development\projects\spring-6-auth-server"
+```
+
+Start the sandbox from WSL:
+
+```bash
+opencode --name spring-6-auth-server --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "/mnt/c/development/projects/spring-6-auth-server"
+```
+
+Remove the sandbox:
+
+```powershell
+sbx remove spring-6-auth-server
+```
 
 ## Swagger/Open Api
 
