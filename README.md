@@ -54,6 +54,12 @@ Start the sandbox (usually from PowerShell):
 sbx run opencode --name spring-6-auth-server --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "C:\development\projects\spring-6-auth-server"
 ```
 
+Start the sandbox with Kubernetes support:
+
+```powershell
+sbx run opencode --name spring-6-auth-server --kit "git+https://github.com/dboeckli/opencode-sandbox-kit.git" "C:\development\projects\spring-6-auth-server" "$env:USERPROFILE\.kube:ro"
+```
+
 Start the sandbox from WSL:
 
 ```bash
@@ -130,6 +136,8 @@ You can use the actuator rest call to verify via port 30900
 ## Deployment with Helm
 
 Be aware that we are using a different namespace here (not default).
+
+For details on how the Helm chart is built via Maven filtering and how Docker/Helm versions are derived, see [docs/helm-maven-setup.md](docs/helm-maven-setup.md).
 
 Go to the directory where the tgz file has been created after 'mvn install'
 
