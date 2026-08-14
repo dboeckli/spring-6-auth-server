@@ -104,27 +104,6 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Add repsy server to settings.xml
-        env:
-          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
-          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
-        run: |
-          # Check if required parameters are set
-          required_params=("HELM_REPSY_USER" "HELM_REPSY_TOKEN")
-          for param in "${required_params[@]}"; do
-            if [ -z "${!param}" ]; then
-              echo "::error::Required parameter $param is not set"
-              exit 1
-            fi
-          done
-          
-          sed -i '/<\/servers>/i \
-          <server>\
-            <id>helm-repsy</id>\
-            <username>${env.HELM_REPSY_USER}</username>\
-            <password>${env.HELM_REPSY_TOKEN}</password>\
-          </server>' $GITHUB_WORKSPACE/settings.xml     
-
       # TODO: Remove workaround when https://github.com/buildpacks/pack/issues/2270 is fixed
       - name: Disable containerd image store (Docker Engine 29+ workaround for Buildpacks)
         run: |
@@ -134,51 +113,6 @@ jobs:
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.14.0
 
-      - name: Helm workaround
-        # This is a workaround because the helm push does not work the standard way. helm login file under ~/.config/helm/registry/config.json is ignored.
-        # Instead, we use the docker login file under ~/.docker/config.json
-        # see: https://github.com/helm/helm/issues/30929 and https://github.com/helm/helm/issues/30942
-        env:
-          DOCKER_USER: ${{ vars.DOCKER_USER }}
-          DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
-          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
-        run: |
-          set -o pipefail
-          set -o nounset
-          set -o errexit
-
-          rm -f ~/.config/helm/registry/config.json
-
-          echo "Helm version:"
-          helm version --short
-
-          # Base64-Encode: username:token (no line wrapping to keep JSON valid)
-          AUTH_DOCKER=$(echo -n "$DOCKER_USER:$DOCKER_TOKEN" | base64 -w 0)
-          AUTH_REPSY=$(echo -n "$HELM_REPSY_USER:$HELM_REPSY_TOKEN" | base64 -w 0)
-
-          # Zielverzeichnis anlegen
-          mkdir -p ~/.docker
-
-          # Docker config.json erzeugen
-          cat > ~/.docker/config.json <<EOF
-          {
-            "auths": {
-              "https://index.docker.io/v1/": {
-                "auth": "$AUTH_DOCKER"
-              },
-              "registry-1.docker.io": {
-                "auth": "$AUTH_DOCKER"
-              },
-              "repo.repsy.io": {
-                "auth": "$AUTH_REPSY"
-              }
-            }
-          }
-          EOF
-
-          echo "✅ Docker config.json added to ~/.docker/config.json"
-        
       - name: show variables
         id: show_build_variables
         shell: bash
@@ -283,27 +217,6 @@ jobs:
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
-
-      - name: Add repsy server to settings.xml
-        env:
-          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
-          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
-        run: |
-          # Check if required parameters are set
-          required_params=("HELM_REPSY_USER" "HELM_REPSY_TOKEN")
-          for param in "${required_params[@]}"; do
-            if [ -z "${!param}" ]; then
-              echo "::error::Required parameter $param is not set"
-              exit 1
-            fi
-          done
-          
-          sed -i '/<\/servers>/i \
-          <server>\
-            <id>helm-repsy</id>\
-            <username>${env.HELM_REPSY_USER}</username>\
-            <password>${env.HELM_REPSY_TOKEN}</password>\
-          </server>' $GITHUB_WORKSPACE/settings.xml     
 
       # TODO: Remove workaround when https://github.com/buildpacks/pack/issues/2270 is fixed
       - name: Disable containerd image store (Docker Engine 29+ workaround for Buildpacks)

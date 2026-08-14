@@ -2,9 +2,14 @@
 
 Dieses Projekt nutzt einen ungewöhnlichen Helm-Build: Die Chart-Quelle liegt in
 `helm-charts/` und wird per Maven-Filtering (`@...@`-Platzhalter) nach `target/`
-kopiert, bevor das `helm-maven-plugin` dort die eigentlichen Helm-Schritte
-ausführt. Dadurch kann Maven Werte (Version, Repo, ArtifactId) direkt in
+kopiert, bevor die Helm-Schritte dort die eigentlichen Helm-Operationen
+ausführen. Dadurch kann Maven Werte (Version, Repo, ArtifactId) direkt in
 Chart.yaml, values.yaml und die Templates hinein auflösen.
+
+> **Hinweis (2026-08, Issue #142):** Das `helm-maven-plugin` (io.kokuwa) wurde
+> durch das `exec-maven-plugin` ersetzt. Alle Helm-Goals laufen jetzt als
+> `exec:exec` mit dem lokalen `helm`-Binary — kompatibel mit Helm v4. Siehe
+> `docs/issue-142-helm-v4-migration.md`.
 
 ## Build-Pipeline (Maven → `target/`)
 
@@ -31,21 +36,22 @@ Alle Helm-Artefakte entstehen ausschließlich unter `target/`; die Quelle
    in `values.yaml` (pom.xml:537).
 6. **`test`** — antrun löscht `target/helm-charts/dependencies-values.yaml`
    wieder (pom.xml:440), damit Helm sie nicht als Datei mitnimmt.
-7. **`helm-maven-plugin`** (io.kokuwa, 6.17.0, `useLocalHelmBinary=true`)
-   arbeitet **nur auf `target/helm-charts/`** (pom.xml:724):
-   - `test`: `lint` + `template` → `target/helm-templated`
-   - `install`: `dry-run` + `package` → tgz in `target/helm/repo`
-   - `deploy`: `registry-login` + `push` →
-     `repo.repsy.io/user08694146/helm-dboeckli`
+7. **`exec-maven-plugin`** (`org.codehaus.mojo`, `exec:exec`) arbeitet **nur auf
+   `target/helm-charts/`** (pom.xml:724):
+   - `test`: `helm lint` + `helm template --output-dir target/helm-templated`
+   - `install`: `helm install --dry-run --generate-name` + `helm package --destination target/helm/repo`
+     → tgz unter `target/helm/repo`
+   - `deploy`: `helm registry login repo.repsy.io` + `helm push <tgz> oci://repo.repsy.io/user08694146/helm-dboeckli`
+     (Credentials aus `HELM_REPSY_USER`/`HELM_REPSY_TOKEN`)
 
 Das „Spezielle": Maven-Filtering läuft **in die Helm-Templates hinein**
 (`@...@`-Platzhalter im `deployment.yaml`, kombiniert mit Helm-`{{ }}`-Syntax),
-und `chartVersion` wird doppelt gesetzt — einmal per Filtering in Chart.yaml,
-einmal als Plugin-Config `chartVersion=${helm.chart.version}`.
+und `helm.chart.version` wird doppelt gesetzt — einmal per Filtering in Chart.yaml,
+einmal als `helm package --version ${helm.chart.version}`.
 
-Hinweis: Der Helm-`package`-Goal räumt alte tgz in `target/helm/repo` nicht auf.
+Hinweis: `helm package` räumt alte tgz in `target/helm/repo` nicht auf.
 Ohne `mvn clean` zwischen Builds bleiben daher mehrere Pakete liegen; nur die
-jeweils neueste wird per `helm-push` deployed.
+jeweils neueste wird per `helm push` deployed.
 
 ## Versionierung Docker / Helm
 
