@@ -18,9 +18,9 @@ the RSA JWK (`SecurityConfig`) — no DB is required (H2/jdbc deps are unused). 
 - `mvn install` additionally builds a docker image (`local/...`) and packages/renders the helm
   chart — requires a local `helm` binary on the PATH (lint+template run in the
   `test` phase, dry-run+package in `install`).
-- `mvn deploy` publishes docker images (ghcr.io, Docker Hub) and the helm chart to repsy — needs
-  CI credentials, never run locally. Helm registry login/push run via `exec-maven-plugin`
-  (credentials from `HELM_REPSY_USER`/`HELM_REPSY_TOKEN`), not via kokuwaio.
+- `mvn deploy` publishes docker images (ghcr.io, Docker Hub) and the helm chart to Docker Hub OCI
+  (`registry-1.docker.io`) — needs CI credentials, never run locally. Helm registry login/push run
+  via `exec-maven-plugin` (credentials from `DOCKER_USER`/`DOCKER_TOKEN`), not via kokuwaio.
 
 ## Test conventions
 

@@ -812,13 +812,13 @@
               <arguments>
                 <argument>registry</argument>
                 <argument>login</argument>
-                <argument>repo.repsy.io</argument>
+                <argument>registry-1.docker.io</argument>
                 <argument>--username</argument>
-                <!--suppress UnresolvedMavenProperty: HELM_REPSY_USER is set by GitHub Actions -->
-                <argument>${env.HELM_REPSY_USER}</argument>
+                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                <argument>${env.DOCKER_USER}</argument>
                 <argument>--password</argument>
-                <!--suppress UnresolvedMavenProperty: HELM_REPSY_TOKEN is set by GitHub Actions -->
-                <argument>${env.HELM_REPSY_TOKEN}</argument>
+                <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
+                <argument>${env.DOCKER_TOKEN}</argument>
               </arguments>
             </configuration>
           </execution>
@@ -835,12 +835,12 @@
                 <!--suppress UnresolvedMavenProperty: helm.chart.version is set by maven antrun plugin -->
                 <argument>${project.build.directory}/helm/repo/${project.artifactId}-chart-${helm.chart.version}.tgz</argument>
                 <argument>--username</argument>
-                <!--suppress UnresolvedMavenProperty: HELM_REPSY_USER is set by GitHub Actions -->
-                <argument>${env.HELM_REPSY_USER}</argument>
+                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                <argument>${env.DOCKER_USER}</argument>
                 <argument>--password</argument>
-                <!--suppress UnresolvedMavenProperty: HELM_REPSY_TOKEN is set by GitHub Actions -->
-                <argument>${env.HELM_REPSY_TOKEN}</argument>
-                <argument>oci://repo.repsy.io/user08694146/helm-dboeckli</argument>
+                <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
+                <argument>${env.DOCKER_TOKEN}</argument>
+                <argument>oci://registry-1.docker.io/${env.DOCKER_USER}</argument>
               </arguments>
             </configuration>
           </execution>

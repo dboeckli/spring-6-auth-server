@@ -41,8 +41,8 @@ Alle Helm-Artefakte entstehen ausschließlich unter `target/`; die Quelle
    - `test`: `helm lint` + `helm template --output-dir target/helm-templated`
    - `install`: `helm install --dry-run --generate-name` + `helm package --destination target/helm/repo`
      → tgz unter `target/helm/repo`
-   - `deploy`: `helm registry login repo.repsy.io` + `helm push <tgz> oci://repo.repsy.io/user08694146/helm-dboeckli`
-     (Credentials aus `HELM_REPSY_USER`/`HELM_REPSY_TOKEN`)
+   - `deploy`: `helm registry login registry-1.docker.io` + `helm push <tgz> oci://registry-1.docker.io/${DOCKER_USER}`
+     (Credentials aus `DOCKER_USER`/`DOCKER_TOKEN`)
 
 Das „Spezielle": Maven-Filtering läuft **in die Helm-Templates hinein**
 (`@...@`-Platzhalter im `deployment.yaml`, kombiniert mit Helm-`{{ }}`-Syntax),
