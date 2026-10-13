@@ -24,7 +24,7 @@ class RequestLoggingFilterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/oauth2/token", "/oauth2/authorize", "/actuator/info" })
+    @ValueSource(strings = { "/oauth2/token", "/oauth2/authorize", "/actuator/info", "/actuator/healthcheck" })
     void logsRequestsNotMatchingAnExcludedPath(String requestUri) {
         RequestLoggingFilter filter = new RequestLoggingFilter(List.of("/actuator/health"));
 
@@ -34,6 +34,13 @@ class RequestLoggingFilterTest {
     @Test
     void logsEverythingWhenNoExcludedPathsAreConfigured() {
         RequestLoggingFilter filter = new RequestLoggingFilter(List.of());
+
+        assertThat(filter.shouldNotFilter(request("/actuator/health"))).isFalse();
+    }
+
+    @Test
+    void logsEverythingWhenExcludedPathsIsNull() {
+        RequestLoggingFilter filter = new RequestLoggingFilter(null);
 
         assertThat(filter.shouldNotFilter(request("/actuator/health"))).isFalse();
     }

@@ -13,8 +13,11 @@ public class RequestLoggingFilter extends CommonsRequestLoggingFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+        if (excludePaths == null || excludePaths.isEmpty()) {
+            return false;
+        }
         String requestUri = request.getRequestURI();
-        return excludePaths.stream().anyMatch(requestUri::startsWith);
+        return excludePaths.stream().anyMatch(path -> requestUri.equals(path) || requestUri.startsWith(path + "/"));
     }
 
 }
