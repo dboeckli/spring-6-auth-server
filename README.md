@@ -69,12 +69,6 @@ sbx run opencode \
     .
 ```
 
-Apply the kit to an existing sandbox (restarts the sandbox, VM state is kept):
-
-```powershell
-sbx kit add opencode-spring-6-auth-server "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent"
-```
-
 Remove the sandbox:
 
 ```powershell
