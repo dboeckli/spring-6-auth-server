@@ -156,11 +156,10 @@ jobs:
         env:
           HELM_CHART_VERSION: ${{ inputs.helm-chart-version }}
           APPLICATION_NAME: ${{ inputs.application-name }}
-          HELM_REPSY_USER: ${{ vars.HELM_REPSY_USER }}
-          HELM_REPSY_TOKEN: ${{ secrets.HELM_REPSY_TOKEN }}
+          DOCKER_USER: ${{ vars.DOCKER_USER }}
         run: |
-          echo "Pulling Helm Chart Version: $HELM_CHART_VERSION"
-          helm pull oci://repo.repsy.io/user08694146/helm-dboeckli/$APPLICATION_NAME-chart --version "$HELM_CHART_VERSION"
+          echo "Pulling Helm Chart Version: $HELM_CHART_VERSION from oci://registry-1.docker.io/$DOCKER_USER/$APPLICATION_NAME-chart"
+          helm pull oci://registry-1.docker.io/$DOCKER_USER/$APPLICATION_NAME-chart --version "$HELM_CHART_VERSION"
           tar -xvf $APPLICATION_NAME-*.tgz
 
           cd $APPLICATION_NAME-chart

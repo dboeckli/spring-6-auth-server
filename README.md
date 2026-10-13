@@ -36,6 +36,10 @@ Server runs on port 9000/30900
 
 ## Sandbox
 
+The sandbox is provisioned by the opencode-sandbox-kit and runs as a Docker container. It mounts this
+repo, starts opencode, and connects the host-side IntelliJ, Kubernetes and Docker MCP servers via the
+sbx MCP gateway (`--static-mcp idea,k8s,docker`).
+
 Initial setup (one-time, allow sandbox kit sources):
 
 ```powershell
@@ -49,21 +53,8 @@ sbx run opencode `
     --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
     --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest `
     --skills=off `
-    --static-mcp idea `
+    --static-mcp idea,k8s,docker `
     . `
-    "C:\development\maven-repo:ro"
-```
-
-Start the sandbox with Kubernetes support:
-
-```powershell
-sbx run opencode `
-    --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest `
-    --skills=off `
-    --static-mcp idea `
-    . `
-    "$env:USERPROFILE\.kube:ro" `
     "C:\development\maven-repo:ro"
 ```
 
@@ -74,14 +65,8 @@ sbx run opencode \
     --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" \
     --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest \
     --skills=off \
-    --static-mcp idea \
+    --static-mcp idea,k8s,docker \
     .
-```
-
-Apply the kit to an existing sandbox (restarts the sandbox, VM state is kept):
-
-```powershell
-sbx kit add opencode-spring-6-auth-server "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent"
 ```
 
 Remove the sandbox:
