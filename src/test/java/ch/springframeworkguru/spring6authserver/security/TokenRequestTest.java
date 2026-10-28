@@ -76,9 +76,8 @@ class TokenRequestTest {
         String setCookieHeader = authorizeResult.getResponse().getHeader(HttpHeaders.SET_COOKIE);
         log.info("Redirect location: {}", redirectLocation);
         log.info("SetCookieHeader: {}", setCookieHeader);
-        assertAll(() -> assertThat(setCookieHeader, nullValue()), // TODO: SHOULD NOT BE
-                                                                  // NULL
-                () -> assertThat(redirectLocation, notNullValue()),
+        // The authorize endpoint does not set a session cookie at this stage
+        assertAll(() -> assertThat(setCookieHeader, nullValue()), () -> assertThat(redirectLocation, notNullValue()),
                 () -> assertThat(redirectLocation, startsWith(REDIRECT_URL)));
     }
 

@@ -104,7 +104,7 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      # TODO: Remove workaround when https://github.com/buildpacks/pack/issues/2270 is fixed
+      # Workaround for https://github.com/buildpacks/pack/issues/2270 (remove once fixed)
       - name: Disable containerd image store (Docker Engine 29+ workaround for Buildpacks)
         run: |
           echo '{ "features": { "containerd-snapshotter": false } }' | sudo tee /etc/docker/daemon.json
@@ -216,7 +216,7 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      # TODO: Remove workaround when https://github.com/buildpacks/pack/issues/2270 is fixed
+      # Workaround for https://github.com/buildpacks/pack/issues/2270 (remove once fixed)
       - name: Disable containerd image store (Docker Engine 29+ workaround for Buildpacks)
         run: |
           echo '{ "features": { "containerd-snapshotter": false } }' | sudo tee /etc/docker/daemon.json
