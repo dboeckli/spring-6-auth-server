@@ -14,7 +14,7 @@ jobs:
     steps:
 
       - name: Checkout project
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
@@ -36,11 +36,11 @@ jobs:
     steps:
 
       - name: Checkout project
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: mfinelli/setup-shfmt@v4
+      - uses: mfinelli/setup-shfmt@v4.0.1
         with:
           shfmt-version: 3.14.1
 
@@ -65,13 +65,13 @@ jobs:
     steps:
 
       - name: Checkout project
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           # requires admin gitHub token which can do merge on master
           token: ${{ secrets.RELEASE_TOKEN }} 
           fetch-depth: 0
 
-      - uses: mfinelli/setup-shfmt@v4
+      - uses: mfinelli/setup-shfmt@v4.0.1
         with:
           shfmt-version: 3.14.1
 
