@@ -256,7 +256,7 @@ jobs:
           mvn -B -e install -Dskip.start.stop.springboot=true -s $GITHUB_WORKSPACE/settings.xml	
       
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2.25.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.26.0
         if: always()
         with:
           files: |
