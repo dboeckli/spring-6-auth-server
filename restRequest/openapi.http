@@ -1,3 +1,5 @@
 ### Open/Swagger
+< scripts/traceparent.js
 GET http://localhost:{{application-port}}/v3/api-docs
-    
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=spring-6-auth-server
