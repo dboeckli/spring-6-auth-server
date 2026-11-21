@@ -49,30 +49,11 @@ sbx settings set kit.allowedSources --% "[\"docker.io/\",\"codeberg.org/dboeckli
 Start the sandbox (usually from PowerShell):
 
 ```powershell
-sbx run opencode `
-    --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest `
+sbx run docker.io/domboeckli/sbx-opencode:latest `
     --skills=off `
     --static-mcp idea,k8s,docker `
     . `
     "C:\development\maven-repo:ro"
-```
-
-Start the sandbox from WSL:
-
-```bash
-sbx run opencode \
-    --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" \
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest \
-    --skills=off \
-    --static-mcp idea,k8s,docker \
-    .
-```
-
-Remove the sandbox:
-
-```powershell
-sbx remove opencode-spring-6-auth-server
 ```
 
 ## Swagger/Open Api
