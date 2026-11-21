@@ -1,21 +1,38 @@
-###
+### token
+< scripts/traceparent.js
 POST http://localhost:{{application-port}}/oauth2/token
 Authorization: Basic messaging-client secret
 Content-Type: application/x-www-form-urlencoded
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=spring-6-auth-server
 
 grant_type=client_credentials&scope=message.read message.write
 
-###
+> {%
+client.global.set("accessToken", response.body.access_token);
+%}
+
+### introspect
+< scripts/traceparent.js
 POST http://localhost:{{application-port}}/oauth2/introspect
 Authorization: Basic messaging-client secret
 Content-Type: application/x-www-form-urlencoded
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=spring-6-auth-server
 
-token={{$auth.token("auth-id")}}&token_type_hint=access_token
+token={{accessToken}}&token_type_hint=access_token
 
-
-###
+### openid-configuration
+< scripts/traceparent.js
 GET http://localhost:{{application-port}}/.well-known/openid-configuration
 Authorization: Basic messaging-client secret
 Content-Type: application/x-www-form-urlencoded
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=spring-6-auth-server
 
-
+### jwks
+< scripts/traceparent.js
+GET http://localhost:{{application-port}}/oauth2/jwks
+Accept: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=spring-6-auth-server

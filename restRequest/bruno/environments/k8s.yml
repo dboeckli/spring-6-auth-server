@@ -1,0 +1,5 @@
+variables:
+  - name: application-port
+    value: "30900"
+  - name: clientId
+    value: messaging-client

@@ -74,6 +74,8 @@
     <sonar-maven-plugin.version>5.9.0.7382</sonar-maven-plugin.version>
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <!-- HTTP client collection and its generator are test tooling, not application code -->
+    <sonar.exclusions>restRequest/**</sonar.exclusions>
     <sonar.language>java</sonar.language>
     <sonar.scm.provider>git</sonar.scm.provider>
     <jacoco.version>0.8.16</jacoco.version>

@@ -36,105 +36,12 @@ on:
         default: 'None'
 
 jobs:
-  deploy-app-with-kubectl:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Show Version
-        env:
-          APP_NAME: ${{ inputs.application-name }}
-          APP_VERSION: ${{ inputs.helm-chart-version }}
-          TRIGGER_WORKFLOW: ${{ inputs.deployed-by-workflow }}
-          TRIGGER_BUILD: ${{ inputs.deployed-by-build }}
-        run: |
-          echo "Deploying Application $APP_NAME, Version: $APP_VERSION"
-          echo "Deployment triggered by workflow $TRIGGER_WORKFLOW. Run number: $TRIGGER_BUILD"
-
-      - name: Check out the repository
-        uses: actions/checkout@v7.0.1
-
-      - uses: mfinelli/setup-shfmt@v4.0.1
-        with:
-          shfmt-version: 3.14.1
-
-      - name: Set up java
-        uses: actions/setup-java@v6.3.0
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'liberica'
-          cache: 'maven'
-          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }}
-
-      - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.15.2
-
-      - name: Deploy application
-        env:
-          APPLICATION_NAME: ${{ inputs.application-name }}
-          VERSION: ${{ inputs.helm-chart-version }}
-        run: |
-          mvn -B versions:set -e -DnewVersion="$VERSION"
-          mvn -B process-resources
-          echo "--- show k8s yaml"
-          cat target/k8s/app.yml
-          echo "Deploying Application $APPLICATION_NAME with version $VERSION"
-          kubectl apply -f target/k8s/ --v=6
-
-      - name: Wait for Pods to be ready
-        env:
-          APPLICATION_NAME: ${{ inputs.application-name }}
-          DEPLOYED_BY_BUILD: ${{ inputs.deployed-by-build }}
-          DEPLOYED_BY_WORKFLOW: ${{ inputs.deployed-by-workflow }}
-          HELM_CHART_VERSION: ${{ inputs.helm-chart-version }}
-        run: |
-          if ! kubectl wait --for=condition=ready pod -l app=$APPLICATION_NAME --timeout=180s; then
-            echo "Pod did not become ready within 180 seconds. Displaying logs:"
-            kubectl get pods -l app=$APPLICATION_NAME
-            POD_NAME=$(kubectl get pods -l app=$APPLICATION_NAME -o jsonpath="{.items[0].metadata.name}")
-            kubectl logs $POD_NAME
-            echo "Describing the pod:"
-            kubectl describe pod $POD_NAME
-            exit 1
-          fi
-          BUILD_LINK="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${DEPLOYED_BY_BUILD}"
-          echo "::notice:: ### Deployed Version: ${HELM_CHART_VERSION}"
-          echo "::notice:: ### Deployment triggered by workflow ${DEPLOYED_BY_WORKFLOW}. Run number: ${DEPLOYED_BY_BUILD}: ${BUILD_LINK}"
-
-      - name: Display Deployment Information
-        env:
-          APPLICATION_NAME: ${{ inputs.application-name }}
-        if: always()
-        run: |
-          echo "Deployment Information:"
-          
-          echo "--- Pods:"
-          kubectl get pods -n default
-          
-          echo "--- Describe pods:"
-          kubectl describe pods -n default
-          
-          echo "--- Services:"
-          kubectl get services -n default
-          
-          echo "--- Show Events:"
-          kubectl get events --sort-by=.metadata.creationTimestamp -n default
-          
-          echo "--- Show Logs (if pods exist)"
-          PODS=$(kubectl get pods -l app=$APPLICATION_NAME -o jsonpath="{.items[*].metadata.name}" -n default)
-          if [ -n "$PODS" ]; then
-            for POD in $PODS; do
-              echo "Logs for pod $POD:"
-              kubectl logs $POD -n default --all-containers
-            done
-          else
-            echo "No pods found with label app=$APPLICATION_NAME in default namespace"
-            echo "Listing all pods in default namespace:"
-            kubectl get pods -n default
-          fi      
-
   deploy-app-with-helm:
     runs-on: ubuntu-latest
-    needs: deploy-app-with-kubectl
+    permissions:
+      contents: read
+      checks: write
+      actions: read
 
     steps:
       - name: Show Version
@@ -236,7 +143,86 @@ jobs:
             exit $TEST_EXIT_CODE
           else
             echo "All Helm tests passed successfully."
-          fi              
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+
+      - name: Install Bruno CLI
+        run: |
+          # The npm registry occasionally serves package metadata before the
+          # tarball is available. npm does not retry 404s, so retry the whole
+          # install here.
+          for attempt in 1 2 3; do
+            if npm install -g --ignore-scripts @usebruno/cli@4.2.1; then
+              echo "Bruno CLI installed (attempt $attempt)"
+              exit 0
+            fi
+            echo "::warning::npm install failed (attempt $attempt), retrying..."
+            npm cache clean --force || true
+            sleep 15
+          done
+          echo "::error::Could not install @usebruno/cli after 3 attempts"
+          exit 1
+
+      - name: Run Bruno API smoke tests
+        working-directory: restRequest/bruno
+        env:
+          NAMESPACE: ${{ inputs.namespace }}
+          APPLICATION_NAME: ${{ inputs.application-name }}
+          BRUNO_CLIENT_ID: ${{ vars.BRUNO_CLIENT_ID }}
+          BRUNO_CLIENT_SECRET: ${{ secrets.BRUNO_CLIENT_SECRET }}
+        run: |
+          set -o pipefail
+          set -o nounset
+          set -o errexit
+
+          kubectl port-forward svc/"$APPLICATION_NAME" 9000:9000 -n "$NAMESPACE" > /tmp/port-forward-app.log 2>&1 &
+          PORT_FORWARD_PID=$!
+          trap 'kill $PORT_FORWARD_PID 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:9000/actuator/health > /dev/null; then
+              echo "Application reachable via port-forward (attempt $attempt)"
+              break
+            fi
+            if [[ "$attempt" -eq 30 ]]; then
+              echo "::error::Application not reachable via port-forward"
+              cat /tmp/port-forward-app.log
+              exit 1
+            fi
+            sleep 2
+          done
+
+          mkdir -p "$GITHUB_WORKSPACE/bru-reports"
+          for folder in actuator auth-requests openapi; do
+            echo "::group::Bruno smoke tests: $folder"
+            bru run "$folder" -r --env local \
+              --reporter-skip-all-headers \
+              --reporter-junit "$GITHUB_WORKSPACE/bru-reports/TEST-bruno-$folder.xml" \
+              --reporter-html "$GITHUB_WORKSPACE/bru-reports/bru-report-$folder.html"
+            echo "::endgroup::"
+          done
+
+      - name: Upload Bruno reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bruno-reports
+          path: bru-reports/
+          if-no-files-found: warn
+
+      - name: Publish Bruno test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@da5b7be67623cd59bbbd1a0ce4f022050a55605f # v2.26.0
+        with:
+          files: bru-reports/TEST-bruno-*.xml
+          check_name: Bruno API smoke tests
+          comment_mode: "off"
+          fail_on: test failures
+          action_fail: true
 
       - name: Display Deployment Information
         env:
@@ -267,4 +253,86 @@ jobs:
             echo "No pods found with label app.kubernetes.io/name=$APPLICATION_NAME in $NAMESPACE namespace"
             echo "Listing all pods in $NAMESPACE namespace:"
             kubectl get pods -n $NAMESPACE
-          fi 
+          fi
+
+  publish-bruno-report:
+    needs: deploy-app-with-helm
+    if: always()
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Download Bruno reports
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        continue-on-error: true
+        with:
+          name: bruno-reports
+          path: bru-reports
+
+      - name: Build Pages site
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -o nounset
+          set -o errexit
+
+          mkdir -p _site
+          shopt -s nullglob
+          reports=(bru-reports/*.html)
+
+          if [[ "${#reports[@]}" -eq 0 ]]; then
+            printf '%s\n' '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Bruno reports</title></head><body><h1>Bruno smoke test reports</h1><p>No report available for this run.</p></body></html>' > _site/index.html
+            exit 0
+          fi
+
+          cp "${reports[@]}" _site/
+          {
+            printf '%s\n' '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Bruno reports</title></head><body>'
+            printf '<h1>Bruno smoke test reports</h1>\n'
+            printf '<p>Workflow run: <a href="%s">%s</a></p>\n' "$RUN_URL" "$RUN_URL"
+            printf '<ul>\n'
+            for report in "${reports[@]}"; do
+              name=$(basename "$report")
+              printf '  <li><a href="%s">%s</a></li>\n' "$name" "$name"
+            done
+            printf '</ul>\n</body></html>\n'
+          } > _site/index.html
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: _site
+          # Unique per attempt: re-runs would otherwise leave a second "github-pages" artifact.
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Add report link to summary
+        if: always()
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          if [[ -n "${PAGE_URL:-}" ]]; then
+            echo "### Bruno reports" >> "$GITHUB_STEP_SUMMARY"
+            echo "$PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
