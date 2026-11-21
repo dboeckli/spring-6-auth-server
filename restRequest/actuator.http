@@ -61,13 +61,6 @@ Accept: application/json
 traceparent: 00-{{traceId}}-{{spanId}}-03
 baggage: testBaggage=spring-6-auth-server
 
-### actuator caches
-< scripts/traceparent.js
-GET localhost:{{application-port}}/actuator/caches
-Accept: application/json
-traceparent: 00-{{traceId}}-{{spanId}}-03
-baggage: testBaggage=spring-6-auth-server
-
 ### actuator get loggers
 < scripts/traceparent.js
 GET localhost:{{application-port}}/actuator/loggers
