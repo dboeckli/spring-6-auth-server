@@ -1,4 +1,4 @@
-package ch.springframeworkguru.spring6authserver.config;
+package ch.springframeworkguru.spring6authserver.config.log;
 
 import lombok.Getter;
 import lombok.Setter;

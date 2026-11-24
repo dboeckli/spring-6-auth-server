@@ -1,4 +1,4 @@
-package ch.springframeworkguru.spring6authserver.config;
+package ch.springframeworkguru.spring6authserver.config.log;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
