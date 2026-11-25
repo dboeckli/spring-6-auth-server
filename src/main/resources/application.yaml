@@ -70,7 +70,7 @@ appconfig:
 logging:
   level:
     org.springframework.security: INFO
-    ch.springframeworkguru.spring6authserver.config.RequestLoggingFilter: DEBUG
+    ch.springframeworkguru.spring6authserver.config.log.RequestLoggingFilter: DEBUG
 
 management:
   health:
