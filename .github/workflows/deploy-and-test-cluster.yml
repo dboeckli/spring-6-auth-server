@@ -4,6 +4,7 @@ run-name: >
 
 env:
   JAVA_VERSION: 25
+  PAGES_ARTIFACT: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
 
 on:
   workflow_dispatch:
@@ -259,23 +260,11 @@ jobs:
     needs: deploy-app-with-helm
     if: always()
     runs-on: ubuntu-latest
-    env:
-      # Unique per attempt: re-runs would otherwise leave a second "github-pages" artifact.
-      # Defined once so the upload, the index check and the deploy always agree.
-      PAGES_ARTIFACT: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
 
     permissions:
       contents: read
       pages: write
       id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    concurrency:
-      group: pages
-      cancel-in-progress: false
 
     steps:
       - name: Download Bruno reports
@@ -323,64 +312,44 @@ jobs:
           path: _site
           name: ${{ env.PAGES_ARTIFACT }}
 
-      # deploy-pages@v5 resolves the artifact through the Actions results
-      # service (Twirp ArtifactService/ListArtifacts), which is eventually
-      # consistent: right after the upload the artifact may not be listed yet,
-      # causing intermittent "No artifacts named ... were found" failures.
-      # Poll the same index until the artifact is visible (best effort).
-      - name: Wait for Pages artifact to be indexed
-        run: |
-          set -o pipefail
-          set -o nounset
+  # Separate deploy job: it only starts after publish-bruno-report has fully
+  # completed (artifact uploaded and indexed). This structurally removes the
+  # eventual-consistency race of running upload-pages-artifact and deploy-pages
+  # within the same job, without depending on undocumented Actions Results APIs.
+  deploy-bruno-report:
+    needs: publish-bruno-report
+    runs-on: ubuntu-latest
 
-          artifact="${PAGES_ARTIFACT:-}"
-          if [[ -z "$artifact" ]]; then
-            echo "::warning::PAGES_ARTIFACT is not set, skipping artifact index check"
-            exit 0
-          fi
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
-          if [[ -z "${ACTIONS_RESULTS_URL:-}" || -z "${ACTIONS_RUNTIME_TOKEN:-}" ]]; then
-            echo "::warning::ACTIONS_RESULTS_URL/ACTIONS_RUNTIME_TOKEN unavailable, falling back to a short delay"
-            sleep 10
-            exit 0
-          fi
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
 
-          # deploy-pages derives the backend IDs from the Actions.Results scope
-          # in the runtime token; do the same so we query the identical index.
-          results_origin="$(printf '%s' "$ACTIONS_RESULTS_URL" | sed -E 's#^(https?://[^/]+).*#\1#')"
-          payload="$(printf '%s' "$ACTIONS_RUNTIME_TOKEN" | cut -d. -f2)"
-          pad=$(((4 - ${#payload} % 4) % 4))
-          if ((pad > 0)); then
-            payload="${payload}$(printf '=%.0s' $(seq 1 "$pad"))"
-          fi
-          scp="$(printf '%s' "$payload" | tr '_-' '/+' | base64 -d 2>/dev/null | jq -r '.scp // empty' 2>/dev/null || true)"
-          ids="$(printf '%s\n' "$scp" | tr ' ' '\n' | sed -n 's/^Actions\.Results://p')"
-          run_backend_id="${ids%%:*}"
-          job_backend_id="${ids##*:}"
-          if [[ -z "$run_backend_id" || -z "$job_backend_id" ]]; then
-            echo "::warning::Could not derive Actions.Results backend IDs, falling back to a short delay"
-            sleep 10
-            exit 0
-          fi
+    concurrency:
+      group: pages
+      cancel-in-progress: false
 
-          for attempt in $(seq 1 30); do
-            body="$(curl -fsS -X POST \
-              "$results_origin/twirp/github.actions.results.api.v1.ArtifactService/ListArtifacts" \
-              -H "Authorization: Bearer $ACTIONS_RUNTIME_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "{\"workflowRunBackendId\":\"$run_backend_id\",\"workflowJobRunBackendId\":\"$job_backend_id\"}" \
-              2>/dev/null || true)"
-            if printf '%s' "$body" | jq -e --arg n "$artifact" '(.artifacts // [])[] | select(.name==$n)' >/dev/null 2>&1; then
-              echo "Artifact $artifact is indexed (attempt $attempt)"
-              exit 0
-            fi
-            sleep 3
-          done
-
-          echo "::warning::Artifact $artifact was not indexed after 90s, continuing to deploy anyway"
-
+    steps:
+      # Best-effort retry: a brief delay plus a second attempt covers any
+      # residual artifact-indexing lag.
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT }}
+
+      - name: Wait before retrying Pages deployment
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 20
+
+      - name: Deploy to GitHub Pages (retry)
+        id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
         with:
           artifact_name: ${{ env.PAGES_ARTIFACT }}
@@ -388,10 +357,9 @@ jobs:
       - name: Add report link to summary
         if: always()
         env:
-          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          PAGE_URL: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
         run: |
           if [[ -n "${PAGE_URL:-}" ]]; then
             echo "### Bruno reports" >> "$GITHUB_STEP_SUMMARY"
             echo "$PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
           fi
-
