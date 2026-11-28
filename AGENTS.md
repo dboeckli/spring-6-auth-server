@@ -52,6 +52,9 @@ the RSA JWK (`SecurityConfig`) — no DB is required (H2/jdbc deps are unused). 
 
 ## Deploy
 
+- CI pins Helm `v4.3.2` via `azure/setup-helm@v5.1.0` before the first Helm call (runner default is
+  Helm 3). The sandbox kit ships Helm 4 as `helm`, so `-Dhelm.executable=helm4` is no longer needed.
+
 - kubectl: `kubectl apply -f target/k8s/` → default namespace (manifests from `k8s/` are
   Maven-filtered into `target/k8s/`).
 - Helm: chart in `helm-charts/` is filtered into `target/helm-charts/`, where
